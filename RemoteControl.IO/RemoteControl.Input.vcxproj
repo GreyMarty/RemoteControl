@@ -86,7 +86,7 @@
       <AdditionalUsingDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
+      <AdditionalDependencies>User32.lib</AdditionalDependencies>
       <DelayLoadDLLs>$(SolutionDir)$(Platform)\$(Configuration)\RemoteControl.Core.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
@@ -100,7 +100,7 @@
       <AdditionalUsingDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
+      <AdditionalDependencies>User32.lib</AdditionalDependencies>
       <DelayLoadDLLs>$(SolutionDir)$(Platform)\$(Configuration)\RemoteControl.Core.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
@@ -114,7 +114,7 @@
       <AdditionalUsingDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
+      <AdditionalDependencies>User32.lib</AdditionalDependencies>
       <DelayLoadDLLs>$(SolutionDir)$(Platform)\$(Configuration)\RemoteControl.Core.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
@@ -128,11 +128,13 @@
       <AdditionalUsingDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
+      <AdditionalDependencies>User32.lib</AdditionalDependencies>
       <DelayLoadDLLs>$(SolutionDir)$(Platform)\$(Configuration)\RemoteControl.Core.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\Keyboard.hpp" />
+    <ClInclude Include="include\KeyboardKey.hpp" />
     <ClInclude Include="include\Mouse.hpp" />
     <ClInclude Include="include\MouseButton.hpp" />
     <ClInclude Include="include\MouseEvent.hpp" />
@@ -147,6 +149,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Keyboard.cpp" />
     <ClCompile Include="src\Mouse.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.aps" />
+    <None Include="include\Keyboard.inl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RemoteControl.Core\RemoteControl.Core.vcxproj">
