@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RemoteControl.Core\RemoteControl.Core.vcxproj" />
     <ProjectReference Include="..\RemoteControl.IO\RemoteControl.Input.vcxproj" />
   </ItemGroup>
 
