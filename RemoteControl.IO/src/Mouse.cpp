@@ -5,8 +5,6 @@
 #include "Mouse.hpp"
 #include "MouseButton.hpp"
 
-#pragma comment(lib, "User32.lib")
-
 using namespace RemoteControl::Core;
 
 namespace RemoteControl 
