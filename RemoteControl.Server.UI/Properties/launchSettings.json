@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RemoteControl.Server.UI": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

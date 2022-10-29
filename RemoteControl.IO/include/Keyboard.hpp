@@ -1,7 +1,10 @@
 #pragma once
-#include "windows.h"
-#include "winuser.h"
 #include "KeyboardKey.hpp"
+
+#ifndef _INC_WINDOWS
+struct INPUT;
+#endif
+
 
 namespace RemoteControl 
 {
