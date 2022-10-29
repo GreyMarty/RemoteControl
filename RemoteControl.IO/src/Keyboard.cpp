@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "windows.h"
 #include "Keyboard.hpp"
 
 namespace RemoteControl 
