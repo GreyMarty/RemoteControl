@@ -86,7 +86,7 @@
       <AdditionalUsingDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>User32.lib</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;Gdi32.lib</AdditionalDependencies>
       <DelayLoadDLLs>$(SolutionDir)$(Platform)\$(Configuration)\RemoteControl.Core.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
@@ -100,7 +100,7 @@
       <AdditionalUsingDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>User32.lib</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;Gdi32.lib</AdditionalDependencies>
       <DelayLoadDLLs>$(SolutionDir)$(Platform)\$(Configuration)\RemoteControl.Core.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
@@ -114,7 +114,7 @@
       <AdditionalUsingDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>User32.lib</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;Gdi32.lib</AdditionalDependencies>
       <DelayLoadDLLs>$(SolutionDir)$(Platform)\$(Configuration)\RemoteControl.Core.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
@@ -128,7 +128,7 @@
       <AdditionalUsingDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>User32.lib</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;Gdi32.lib</AdditionalDependencies>
       <DelayLoadDLLs>$(SolutionDir)$(Platform)\$(Configuration)\RemoteControl.Core.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
@@ -138,6 +138,7 @@
     <ClInclude Include="include\Mouse.hpp" />
     <ClInclude Include="include\MouseButton.hpp" />
     <ClInclude Include="include\MouseEvent.hpp" />
+    <ClInclude Include="include\Screen.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>
@@ -151,6 +152,7 @@
     </ClCompile>
     <ClCompile Include="src\Keyboard.cpp" />
     <ClCompile Include="src\Mouse.cpp" />
+    <ClCompile Include="src\Screen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc" />
