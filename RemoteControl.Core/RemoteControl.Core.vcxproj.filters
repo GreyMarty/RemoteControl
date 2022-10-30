@@ -24,7 +24,13 @@
     <ClInclude Include="include\Point.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Bitmap.hpp">
+    <ClInclude Include="include\IBitmap.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IBitmap.cpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Screenshot.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,7 +44,7 @@
     <ClCompile Include="src\Point.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Bitmap.cpp">
+    <ClCompile Include="src\Screenshot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,7 +62,7 @@
     <None Include="include\Point.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="include\Bitmap.inl">
+    <None Include="include\Screenshot.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

@@ -8,7 +8,7 @@ namespace RemoteControl
 {
 	namespace IO 
 	{
-		Bitmap^ Screen::Capture() 
+		Screenshot^ Screen::Capture() 
 		{
 			HDC hScreenDC = GetDC(nullptr);
 			HDC hMemoryDC = CreateCompatibleDC(hScreenDC);
@@ -26,7 +26,7 @@ namespace RemoteControl
 			DeleteDC(hMemoryDC);
 			DeleteDC(hScreenDC);
 
-			return gcnew Bitmap(static_cast<System::IntPtr>(hBitmap));
+			return gcnew Screenshot(static_cast<System::IntPtr>(hBitmap), static_cast<System::IntPtr>(nullptr));
 		}
 	}
 }

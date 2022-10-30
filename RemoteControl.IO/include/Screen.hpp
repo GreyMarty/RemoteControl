@@ -7,7 +7,7 @@ namespace RemoteControl
 		public ref class Screen abstract sealed 
 		{
 		public:
-			static Core::Bitmap^ Capture();
+			static Core::Screenshot^ Capture();
 		};
 	}
 }
