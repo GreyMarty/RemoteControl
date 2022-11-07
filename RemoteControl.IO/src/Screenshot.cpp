@@ -5,12 +5,10 @@ namespace RemoteControl
 {
 	namespace Core
 	{
-		Screenshot::Screenshot(const HBITMAP hBitmap, const HWND hWnd) :
+		Screenshot::Screenshot(const HBITMAP hBitmap, const HDC hDc) :
 			m_hBitmap(hBitmap),
-			m_hWnd(hWnd)
+			m_hDc(hDc)
 		{
-			HDC hDc = GetDC(hWnd);
-
 			BITMAPINFO bitmapInfo = { 0 };
 			bitmapInfo.bmiHeader.biSize = sizeof(bitmapInfo.bmiHeader);
 
@@ -24,12 +22,10 @@ namespace RemoteControl
 			m_sizeBytes = bitmapInfo.bmiHeader.biSizeImage;
 
 			m_stride = ((m_width * m_bitsPerPixel + 31) / 32) * 4;
-
-			DeleteDC(hDc);
 		}
 
-		Screenshot::Screenshot(System::IntPtr hBitmap, System::IntPtr hWnd) :
-			Screenshot(static_cast<HBITMAP>(hBitmap.ToPointer()), static_cast<HWND>(hWnd.ToPointer()))
+		Screenshot::Screenshot(System::IntPtr hBitmap, System::IntPtr hDc) :
+			Screenshot(static_cast<HBITMAP>(hBitmap.ToPointer()), static_cast<HDC>(hDc.ToPointer()))
 		{
 		}
 
@@ -53,19 +49,15 @@ namespace RemoteControl
 
 			m_scan0 = new char[SizeBytes];
 
-			HDC hDc = GetDC(m_hWnd);
-
 			BITMAPINFO bitmapInfo = { 0 };
 			bitmapInfo.bmiHeader.biSize = sizeof(bitmapInfo.bmiHeader);
 
-			GetDIBits(hDc, m_hBitmap, 0, 0, NULL, &bitmapInfo, DIB_RGB_COLORS);
+			GetDIBits(m_hDc, m_hBitmap, 0, 0, NULL, &bitmapInfo, DIB_RGB_COLORS);
 
 			bitmapInfo.bmiHeader.biCompression = BI_RGB;
 			bitmapInfo.bmiHeader.biHeight *= -1;
 
-			GetDIBits(hDc, m_hBitmap, 0, bitmapInfo.bmiHeader.biHeight, m_scan0, &bitmapInfo, DIB_RGB_COLORS);
-
-			DeleteDC(hDc);
+			GetDIBits(m_hDc, m_hBitmap, 0, bitmapInfo.bmiHeader.biHeight, m_scan0, &bitmapInfo, DIB_RGB_COLORS);
 		}
 
 		void Screenshot::UnlockBits()

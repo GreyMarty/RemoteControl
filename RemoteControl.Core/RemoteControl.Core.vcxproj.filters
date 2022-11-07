@@ -27,10 +27,7 @@
     <ClInclude Include="include\IBitmap.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\IBitmap.cpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Screenshot.hpp">
+    <ClInclude Include="include\IVideoStream.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,7 +41,10 @@
     <ClCompile Include="src\Point.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Screenshot.cpp">
+    <ClCompile Include="src\IBitmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IVideoStream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -60,9 +60,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="include\Point.inl">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="include\Screenshot.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

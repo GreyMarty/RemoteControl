@@ -2,7 +2,6 @@
 
 #include "inttypes.h"
 #include "windows.h"
-#include "IBitmap.hpp"
 
 namespace RemoteControl
 {
@@ -41,9 +40,9 @@ namespace RemoteControl
 				System::IntPtr get();
 			}
 
-			Screenshot(const HBITMAP hBitmap, const HWND hWnd);
+			Screenshot(const HBITMAP hBitmap, const HDC hDc);
 
-			Screenshot(System::IntPtr hBitmap, System::IntPtr hWnd);
+			Screenshot(System::IntPtr hBitmap, System::IntPtr hDc);
 
 			~Screenshot();
 
@@ -54,7 +53,7 @@ namespace RemoteControl
 			virtual void UnlockBits();
 
 		private:
-			const HWND m_hWnd;
+			const HDC m_hDc;
 			const HBITMAP m_hBitmap;
 
 			uint32_t m_width;
