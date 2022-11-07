@@ -9,6 +9,16 @@ namespace RemoteControl
 		public ref class WindowsScreenRecorder sealed : public Core::IVideoStream
 		{
 		public:
+			virtual property uint32_t Width 
+			{
+				uint32_t get();
+			}
+
+			virtual property uint32_t Height 
+			{
+				uint32_t get();
+			}
+
 			WindowsScreenRecorder();
 
 			virtual Core::IBitmap^ NextFrame();

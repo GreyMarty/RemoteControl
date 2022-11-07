@@ -8,6 +8,16 @@ namespace RemoteControl
 {
 	namespace IO 
 	{
+		uint32_t WindowsScreenRecorder::Width::get() 
+		{
+			return m_screenWidth;
+		}
+
+		uint32_t WindowsScreenRecorder::Height::get() 
+		{
+			return m_screenHeight;
+		}
+
 		WindowsScreenRecorder::WindowsScreenRecorder() 
 		{
 			m_hScreenDc = GetDC(nullptr);
