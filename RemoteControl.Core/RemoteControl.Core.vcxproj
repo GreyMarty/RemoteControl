@@ -124,8 +124,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\Bitmap.hpp" />
+    <ClInclude Include="include\IBitmap.hpp" />
     <ClInclude Include="include\Point.hpp" />
+    <ClInclude Include="include\IVideoStream.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>
@@ -137,7 +138,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Bitmap.cpp" />
+    <ClCompile Include="src\IBitmap.cpp" />
+    <ClCompile Include="src\IVideoStream.cpp" />
     <ClCompile Include="src\Point.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -147,7 +149,6 @@
     <Image Include="app.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="include\Bitmap.inl" />
     <None Include="include\Point.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

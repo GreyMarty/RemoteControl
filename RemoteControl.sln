@@ -5,7 +5,7 @@ VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RemoteControl.IO", "RemoteControl.IO\RemoteControl.Input.vcxproj", "{7DE87AB4-082F-465F-A41D-DB3FB30E4529}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RemoteControl.Compression", "RemoteControl.Compression\RemoteControl.Compressing.vcxproj", "{3EF40796-94D6-45B8-AC03-F465C5C72301}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RemoteControl.Encoding", "RemoteControl.Encoding\RemoteControl.Compressing.vcxproj", "{3EF40796-94D6-45B8-AC03-F465C5C72301}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RemoteControl.Core", "RemoteControl.Core\RemoteControl.Core.vcxproj", "{01BEA466-98A5-46AA-9D91-E53FE3E0EB58}"
 EndProject

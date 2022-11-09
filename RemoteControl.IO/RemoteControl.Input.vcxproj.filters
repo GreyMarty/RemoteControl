@@ -36,7 +36,10 @@
     <ClInclude Include="include\MouseButton.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Screen.hpp">
+    <ClInclude Include="include\WindowsScreenRecorder.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Screenshot.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,7 +56,10 @@
     <ClCompile Include="src\Mouse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Screen.cpp">
+    <ClCompile Include="src\WindowsScreenRecorder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Screenshot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -70,6 +76,9 @@
   <ItemGroup>
     <None Include="app.aps" />
     <None Include="include\Keyboard.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\Screenshot.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
