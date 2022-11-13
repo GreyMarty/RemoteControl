@@ -1,5 +1,8 @@
 #include "pch.h"
 
+#include <iostream>
+#include <chrono>
+
 extern "C"
 {
 #include "libavcodec/avcodec.h"
@@ -15,6 +18,7 @@ using namespace System;
 using namespace System::IO;
 using namespace System::Runtime::InteropServices;
 using namespace RemoteControl::Core;
+using namespace std::chrono;
 
 namespace RemoteControl
 {
@@ -24,6 +28,7 @@ namespace RemoteControl
 			m_videoStream(videoStream)
 		{
 			m_codec = avcodec_find_encoder(AV_CODEC_ID_H264);
+			//m_codec = avcodec_find_encoder_by_name("h264_nvenc");
 
 			m_codecContext = avcodec_alloc_context3(m_codec);
 			m_codecContext->bit_rate = 400000;
@@ -31,10 +36,11 @@ namespace RemoteControl
 			m_codecContext->height = videoStream->Height;
 			m_codecContext->time_base = { 1, 25 };
 			m_codecContext->framerate = { 25, 1 };
-			m_codecContext->gop_size = 10;
-			m_codecContext->max_b_frames = 1;
+
 			m_codecContext->pix_fmt = AV_PIX_FMT_YUV420P;
 
+			av_opt_set(m_codecContext->priv_data, "crf", "30", 0);
+			av_opt_set(m_codecContext->priv_data, "tune", "zerolatency", 0);
 			av_opt_set(m_codecContext->priv_data, "preset", "ultrafast", 0);
 
 			avcodec_open2(m_codecContext, m_codec, NULL);
@@ -132,10 +138,16 @@ namespace RemoteControl
 					throw gcnew System::Exception("Error during encoding!");
 				}
 
+				packet->pts = time(NULL);
+
 				array<uint8_t>^ buffer = gcnew array<uint8_t>(packet->size);
 				Marshal::Copy(static_cast<IntPtr>(packet->data), buffer, 0, packet->size);
 
 				outStream->Write(buffer, 0, buffer->Length);
+
+				milliseconds timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+				Marshal::Copy(static_cast<IntPtr>(&timestamp), buffer, 0, sizeof(milliseconds));
+				outStream->Write(buffer, 0, sizeof(milliseconds));
 				
 				av_packet_unref(packet);
 			}
