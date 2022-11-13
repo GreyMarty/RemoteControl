@@ -1,11 +1,13 @@
 #include "pch.h"
 
 #include <iostream>
+#include <chrono>
 
 extern "C" 
 {
 #include "libavcodec/avcodec.h"
 #include "libswscale/swscale.h"
+#include "libavutil/opt.h"
 }
 
 #include "StreamDecoder.hpp"
@@ -15,6 +17,7 @@ using namespace System;
 using namespace System::IO;
 using namespace System::Runtime::InteropServices;
 using namespace RemoteControl::Core;
+using namespace std::chrono;
 
 namespace RemoteControl 
 {
@@ -25,12 +28,13 @@ namespace RemoteControl
 		StreamDecoder::StreamDecoder(Stream^ stream) :
 			m_stream(stream)
 		{
-			m_codec = avcodec_find_decoder(AV_CODEC_ID_MPEG4);
+			m_codec = avcodec_find_decoder(AV_CODEC_ID_H264);
 			//m_codec = avcodec_find_decoder_by_name("h264_nvenc");
 
 			m_parser = av_parser_init(m_codec->id);
 
 			m_context = avcodec_alloc_context3(m_codec);
+
 			avcodec_open2(m_context, m_codec, NULL);
 
 			m_packet = av_packet_alloc();
@@ -101,6 +105,14 @@ namespace RemoteControl
 
 				if (m_packet->size)
 				{
+					milliseconds timestamp;
+					memcpy(&timestamp, m_packet->data + m_packet->size - sizeof(milliseconds), sizeof(milliseconds));
+
+					m_packet->size -= sizeof(milliseconds);
+
+					m_latencyMilliseconds = (duration_cast<milliseconds>(system_clock::now().time_since_epoch()) - timestamp).count();
+					std::cout << "Latency: " << m_latencyMilliseconds << "ms" << std::endl;
+
 					DecodeInit(m_context, m_packet);
 					m_parsePacket = true;
 				}
@@ -110,7 +122,8 @@ namespace RemoteControl
 
 			if (m_parsePacket)
 			{
-				m_parsePacket = DecodeNext(m_context, m_frame, m_bitmapFrame, m_packet, bitmap);
+				bool sync = m_latencyMilliseconds > 75;
+				m_parsePacket = DecodeNext(m_context, m_frame, m_bitmapFrame, m_packet, bitmap, sync);
 
 				if (bitmap)
 				{
@@ -139,7 +152,7 @@ namespace RemoteControl
 			return ret;
 		}
 
-		bool StreamDecoder::DecodeNext(AVCodecContext* context, AVFrame* frame, AVFrame* bitmapFrame, AVPacket* packet, IBitmap^% outBitmap)
+		bool StreamDecoder::DecodeNext(AVCodecContext* context, AVFrame* frame, AVFrame* bitmapFrame, AVPacket* packet, IBitmap^% outBitmap, bool sync)
 		{
 			int ret = avcodec_receive_frame(context, frame);
 
@@ -153,11 +166,18 @@ namespace RemoteControl
 				throw gcnew Exception("Error during decoding!");
 			}
 
+			if (sync) 
+			{
+				av_frame_unref(bitmapFrame);
+				return true;
+			}
+
 			bitmapFrame->format = AV_PIX_FMT_RGB32;
 			bitmapFrame->width = frame->width;
 			bitmapFrame->height = frame->height;
 			
 			av_frame_get_buffer(bitmapFrame, 32);
+			
 
 			SwsContext* swsContext = sws_getContext(
 				frame->width,

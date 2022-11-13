@@ -49,11 +49,13 @@ namespace RemoteControl
 			uint8_t* m_data;
 			size_t m_dataSize;
 
+			uint64_t m_latencyMilliseconds;
+
 			bool m_parsePacket = false;
 
 			static int DecodeInit(AVCodecContext* context, AVPacket* packet);
 
-			static bool DecodeNext(AVCodecContext* context, AVFrame* frame, AVFrame* bitmapFrame, AVPacket* packet, Core::IBitmap^% outBitmap);
+			static bool DecodeNext(AVCodecContext* context, AVFrame* frame, AVFrame* bitmapFrame, AVPacket* packet, Core::IBitmap^% outBitmap, bool sync);
 		};
 	}
 }
