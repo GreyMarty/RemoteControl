@@ -141,6 +141,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\MemoryBitmap.hpp" />
+    <ClInclude Include="include\StreamDecoder.hpp" />
     <ClInclude Include="include\StreamEncoder.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
@@ -153,6 +155,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\MemoryBitmap.cpp" />
+    <ClCompile Include="src\StreamDecoder.cpp" />
     <ClCompile Include="src\StreamEncoder.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +179,8 @@
     <None Include="dll\postproc-56.dll" />
     <None Include="dll\swresample-4.dll" />
     <None Include="dll\swscale-6.dll" />
+    <None Include="include\MemoryBitmap.inl" />
+    <None Include="include\StreamDecoder.inl" />
     <None Include="lib\libav\avcodec-59.def" />
     <None Include="lib\libav\avformat-59.def" />
     <None Include="lib\libav\avutil-57.def" />

@@ -23,7 +23,8 @@ namespace RemoteControl
 		StreamEncoder::StreamEncoder(IVideoStream^ videoStream) :
 			m_videoStream(videoStream)
 		{
-			m_codec = avcodec_find_encoder(AV_CODEC_ID_H264);
+			m_codec = avcodec_find_encoder(AV_CODEC_ID_MPEG4);
+			//m_codec = avcodec_find_encoder_by_name("h264_nvenc");
 
 			m_codecContext = avcodec_alloc_context3(m_codec);
 			m_codecContext->bit_rate = 400000;
@@ -35,7 +36,8 @@ namespace RemoteControl
 			m_codecContext->max_b_frames = 1;
 			m_codecContext->pix_fmt = AV_PIX_FMT_YUV420P;
 
-			av_opt_set(m_codecContext->priv_data, "preset", "ultrafast", 0);
+			//av_opt_set(m_codecContext->priv_data, "preset", "fast", 0);
+			//av_opt_set(m_codecContext->priv_data, "profile", "high444p", 0);
 
 			avcodec_open2(m_codecContext, m_codec, NULL);
 
