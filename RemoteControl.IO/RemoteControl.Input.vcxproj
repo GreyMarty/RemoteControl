@@ -133,13 +133,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\Keyboard.hpp" />
-    <ClInclude Include="include\KeyboardKey.hpp" />
-    <ClInclude Include="include\Mouse.hpp" />
-    <ClInclude Include="include\MouseButton.hpp" />
-    <ClInclude Include="include\MouseEvent.hpp" />
-    <ClInclude Include="include\Screenshot.hpp" />
-    <ClInclude Include="include\WindowsScreenRecorder.hpp" />
+    <ClInclude Include="include\Manipulation\ICommand.hpp" />
+    <ClInclude Include="include\Manipulation\ICommandParser.hpp" />
+    <ClInclude Include="include\Keyboard\Keyboard.hpp" />
+    <ClInclude Include="include\Keyboard\KeyboardKey.hpp" />
+    <ClInclude Include="include\Mouse\Manipulation\MouseButtonCommand.hpp" />
+    <ClInclude Include="include\Mouse\Manipulation\MouseMoveCommand.hpp" />
+    <ClInclude Include="include\Mouse\Manipulation\MouseScrollCommand.hpp" />
+    <ClInclude Include="include\Mouse\Mouse.hpp" />
+    <ClInclude Include="include\Mouse\MouseButton.hpp" />
+    <ClInclude Include="include\Mouse\MouseEvent.hpp" />
+    <ClInclude Include="include\Screen\Screenshot.hpp" />
+    <ClInclude Include="include\Screen\WindowsScreenRecorder.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>
@@ -151,10 +156,13 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Keyboard.cpp" />
-    <ClCompile Include="src\Mouse.cpp" />
-    <ClCompile Include="src\Screenshot.cpp" />
-    <ClCompile Include="src\WindowsScreenRecorder.cpp" />
+    <ClCompile Include="src\Keyboard\Keyboard.cpp" />
+    <ClCompile Include="src\Mouse\Manipulation\MouseButtonCommand.cpp" />
+    <ClCompile Include="src\Mouse\Manipulation\MouseMoveCommand.cpp" />
+    <ClCompile Include="src\Mouse\Manipulation\MouseScrollCommand.cpp" />
+    <ClCompile Include="src\Mouse\Mouse.cpp" />
+    <ClCompile Include="src\Screen\Screenshot.cpp" />
+    <ClCompile Include="src\Screen\WindowsScreenRecorder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc" />
@@ -164,8 +172,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.aps" />
-    <None Include="include\Keyboard.inl" />
-    <None Include="include\Screenshot.inl" />
+    <None Include="include\Keyboard\Keyboard.inl" />
+    <None Include="include\Mouse\Manipulation\MouseButtonCommand.inl" />
+    <None Include="include\Mouse\Manipulation\MouseMoveCommand.inl" />
+    <None Include="include\Mouse\Manipulation\MouseScrollCommand.inl" />
+    <None Include="include\Screen\Screenshot.inl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RemoteControl.Core\RemoteControl.Core.vcxproj">
