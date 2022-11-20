@@ -21,25 +21,28 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Keyboard.hpp">
+    <ClInclude Include="include\Keyboard\Keyboard.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\KeyboardKey.hpp">
+    <ClInclude Include="include\Keyboard\KeyboardKey.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Mouse.hpp">
+    <ClInclude Include="include\Mouse\Mouse.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\MouseEvent.hpp">
+    <ClInclude Include="include\Mouse\MouseEvent.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\MouseButton.hpp">
+    <ClInclude Include="include\Mouse\MouseButton.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\WindowsScreenRecorder.hpp">
+    <ClInclude Include="include\Screen\WindowsScreenRecorder.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Screenshot.hpp">
+    <ClInclude Include="include\Screen\Screenshot.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Manipulation\ICommandParser.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -75,10 +78,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.aps" />
-    <None Include="include\Keyboard.inl">
+    <None Include="include\Keyboard\Keyboard.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="include\Screenshot.inl">
+    <None Include="include\Screen\Screenshot.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
