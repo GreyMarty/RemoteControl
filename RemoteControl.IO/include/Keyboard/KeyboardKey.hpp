@@ -141,6 +141,12 @@ namespace RemoteControl
 				StartApp1 = 0xB6,
 				StartApp2 = 0xB7
 			};
+
+			public enum class KeyboardKeyEvent 
+			{
+				Press,
+				Release
+			};
 		}
 	}
 }

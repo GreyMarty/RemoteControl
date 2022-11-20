@@ -69,6 +69,12 @@
     <ClInclude Include="include\Manipulation\Commands.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Keyboard\Manipulation\KeyboardKeyCommand.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Keyboard\Manipulation\KeyboardCommands.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -101,6 +107,9 @@
     <ClCompile Include="src\Manipulation\CommandStreamParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Keyboard\Manipulation\KeyboardKeyCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc">
@@ -130,6 +139,9 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="include\Manipulation\CommandStreamParser.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\Keyboard\Manipulation\KeyboardKeyCommand.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

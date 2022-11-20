@@ -7,6 +7,7 @@
 using namespace System;
 using namespace System::IO;
 using namespace RemoteControl::IO::Mouse::Manipulation;
+using namespace RemoteControl::IO::Keyboard::Manipulation;
 
 namespace RemoteControl 
 {
@@ -41,6 +42,9 @@ namespace RemoteControl
 					break;
 				case CommandCode::MouseScroll:
 					command = MouseScrollCommand::Parse(m_stream);
+					break;
+				case CommandCode::KeyboardKey:
+					command = KeyboardKeyCommand::Parse(m_stream);
 					break;
 				default:
 					throw gcnew FormatException("Invalid stream format");

@@ -133,6 +133,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\Keyboard\Manipulation\KeyboardCommands.hpp" />
+    <ClInclude Include="include\Keyboard\Manipulation\KeyboardKeyCommand.hpp" />
     <ClInclude Include="include\Manipulation\Commands.hpp" />
     <ClInclude Include="include\Manipulation\CommandStreamParser.hpp" />
     <ClInclude Include="include\Manipulation\ICommand.hpp" />
@@ -161,6 +163,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Keyboard\Keyboard.cpp" />
+    <ClCompile Include="src\Keyboard\Manipulation\KeyboardKeyCommand.cpp" />
     <ClCompile Include="src\Manipulation\CommandStreamParser.cpp" />
     <ClCompile Include="src\Mouse\Manipulation\MouseButtonCommand.cpp" />
     <ClCompile Include="src\Mouse\Manipulation\MouseMoveCommand.cpp" />
@@ -178,6 +181,7 @@
   <ItemGroup>
     <None Include="app.aps" />
     <None Include="include\Keyboard\Keyboard.inl" />
+    <None Include="include\Keyboard\Manipulation\KeyboardKeyCommand.inl" />
     <None Include="include\Manipulation\CommandStreamParser.inl" />
     <None Include="include\Mouse\Manipulation\MouseButtonCommand.inl" />
     <None Include="include\Mouse\Manipulation\MouseMoveCommand.inl" />
