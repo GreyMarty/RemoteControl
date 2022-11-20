@@ -11,6 +11,11 @@ namespace RemoteControl
 			public interface class ICommandParser 
 			{
 			public:
+				property bool CanParse 
+				{
+					bool get();
+				}
+
 				ICommand^ ParseNext();
 			};
 		}

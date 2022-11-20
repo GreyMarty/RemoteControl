@@ -1,5 +1,7 @@
 #pragma once
 
+#include <inttypes.h>
+
 #include "Manipulation/ICommand.hpp"
 #include "Mouse/Mouse.hpp"
 
@@ -14,6 +16,11 @@ namespace RemoteControl
 				public ref class MouseButtonCommand : public IO::Manipulation::ICommand
 				{
 				public:
+					virtual property int DataSize 
+					{
+						int get();
+					}
+
 					property MouseButton Button
 					{
 						MouseButton get();
@@ -28,6 +35,12 @@ namespace RemoteControl
 
 
 					virtual void Execute();
+
+					virtual int WriteTo(System::IO::Stream^ stream);
+
+					static MouseButtonCommand^ Parse(array<uint8_t>^ buffer, int offset);
+
+					static MouseButtonCommand^ Parse(System::IO::Stream^ stream);
 
 				private:
 					MouseButton m_button;

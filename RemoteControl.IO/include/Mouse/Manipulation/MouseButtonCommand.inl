@@ -6,6 +6,11 @@ namespace RemoteControl
 		{
 			namespace Manipulation
 			{
+				inline int MouseButtonCommand::DataSize::get() 
+				{
+					return 2 * sizeof(int);
+				}
+
 				inline MouseButton MouseButtonCommand::Button::get()
 				{
 					return m_button;

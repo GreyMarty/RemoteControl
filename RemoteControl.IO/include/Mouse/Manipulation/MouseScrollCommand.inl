@@ -6,6 +6,11 @@ namespace RemoteControl
 		{
 			namespace Manipulation
 			{
+				inline int MouseScrollCommand::DataSize::get() 
+				{
+					return sizeof(int);
+				}
+
 				inline int MouseScrollCommand::Delta::get()
 				{
 					return m_delta;

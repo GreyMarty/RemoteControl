@@ -40,15 +40,15 @@ namespace RemoteControl
 				return flags;
 			}
 
-			PointU Mouse::GetPosition()
+			PointI Mouse::GetPosition()
 			{
 				POINT point;
 				GetCursorPos(&point);
 
-				return PointU(point.x, point.y);
+				return PointI(point.x, point.y);
 			}
 
-			void Mouse::SetPosition(PointU position)
+			void Mouse::SetPosition(PointI position)
 			{
 				SetCursorPos(position.X, position.Y);
 			}
