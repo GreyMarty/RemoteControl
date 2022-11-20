@@ -2,7 +2,7 @@
 
 namespace RemoteControl
 {
-	namespace Core
+	namespace IO
 	{
 		namespace Mouse
 		{

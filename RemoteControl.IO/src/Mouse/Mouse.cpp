@@ -12,6 +12,34 @@ namespace RemoteControl
 	{
 		namespace Mouse
 		{
+			static DWORD ButtonToDwEventFlags(MouseButton button, MouseButtonEvent event) 
+			{
+				DWORD flags = 0x0000;
+
+				DWORD mouseButtonUpFlags[] = { MOUSEEVENTF_LEFTUP, MOUSEEVENTF_MIDDLEUP, MOUSEEVENTF_RIGHTUP };
+				DWORD mouseButtonDownFlags[] = { MOUSEEVENTF_LEFTDOWN, MOUSEEVENTF_MIDDLEDOWN, MOUSEEVENTF_RIGHTDOWN };
+
+				MouseButton mouseButtons[] = { MouseButton::Left, MouseButton::Middle, MouseButton::Right, MouseButton::X };
+
+				if ((bool)(event & MouseButtonEvent::Up))
+				{
+					for (int i = 0; i < 3; i++)
+					{
+						flags |= mouseButtonUpFlags[i] * ((DWORD)(button & mouseButtons[i]) != 0);
+					}
+				}
+
+				if ((bool)(event & MouseButtonEvent::Down))
+				{
+					for (int i = 0; i < 3; i++)
+					{
+						flags |= mouseButtonDownFlags[i] * ((DWORD)(button & mouseButtons[i]) != 0);
+					}
+				}
+
+				return flags;
+			}
+
 			PointU Mouse::GetPosition()
 			{
 				POINT point;
@@ -87,34 +115,6 @@ namespace RemoteControl
 				input.mi.mouseData = delta;
 
 				SendInput(1, &input, sizeof(INPUT));
-			}
-
-			DWORD Mouse::ButtonToDwEventFlags(MouseButton button, MouseButtonEvent event)
-			{
-				DWORD flags = 0x0000;
-
-				DWORD mouseButtonUpFlags[] = { MOUSEEVENTF_LEFTUP, MOUSEEVENTF_MIDDLEUP, MOUSEEVENTF_RIGHTUP };
-				DWORD mouseButtonDownFlags[] = { MOUSEEVENTF_LEFTDOWN, MOUSEEVENTF_MIDDLEDOWN, MOUSEEVENTF_RIGHTDOWN };
-
-				MouseButton mouseButtons[] = { MouseButton::Left, MouseButton::Middle, MouseButton::Right, MouseButton::X };
-
-				if ((bool)(event & MouseButtonEvent::Up))
-				{
-					for (int i = 0; i < 3; i++)
-					{
-						flags |= mouseButtonUpFlags[i] * ((DWORD)(button & mouseButtons[i]) != 0);
-					}
-				}
-
-				if ((bool)(event & MouseButtonEvent::Down))
-				{
-					for (int i = 0; i < 3; i++)
-					{
-						flags |= mouseButtonDownFlags[i] * ((DWORD)(button & mouseButtons[i]) != 0);
-					}
-				}
-
-				return flags;
 			}
 		}
 	}

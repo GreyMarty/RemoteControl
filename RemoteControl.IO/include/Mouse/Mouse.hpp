@@ -25,9 +25,6 @@ namespace RemoteControl
 				static void Click(MouseButton button);
 
 				static void Scroll(int delta);
-
-			private:
-				static DWORD ButtonToDwEventFlags(MouseButton button, MouseButtonEvent event);
 			};
 		}
 	}

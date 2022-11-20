@@ -45,6 +45,18 @@
     <ClInclude Include="include\Manipulation\ICommandParser.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Manipulation\ICommand.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Mouse\Manipulation\MouseMoveCommand.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Mouse\Manipulation\MouseButtonCommand.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Mouse\Manipulation\MouseScrollCommand.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -53,16 +65,25 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Keyboard.cpp">
+    <ClCompile Include="src\Keyboard\Keyboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mouse.cpp">
+    <ClCompile Include="src\Mouse\Mouse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\WindowsScreenRecorder.cpp">
+    <ClCompile Include="src\Screen\WindowsScreenRecorder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Screenshot.cpp">
+    <ClCompile Include="src\Screen\Screenshot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mouse\Manipulation\MouseMoveCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mouse\Manipulation\MouseButtonCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mouse\Manipulation\MouseScrollCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -82,6 +103,15 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="include\Screen\Screenshot.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\Mouse\Manipulation\MouseMoveCommand.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\Mouse\Manipulation\MouseButtonCommand.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\Mouse\Manipulation\MouseScrollCommand.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
