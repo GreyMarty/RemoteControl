@@ -57,6 +57,18 @@
     <ClInclude Include="include\Mouse\Manipulation\MouseScrollCommand.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Manipulation\CommandStreamParser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Manipulation\CommandCode.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Mouse\Manipulation\MouseCommands.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Manipulation\Commands.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -86,6 +98,9 @@
     <ClCompile Include="src\Mouse\Manipulation\MouseScrollCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Manipulation\CommandStreamParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc">
@@ -112,6 +127,9 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="include\Mouse\Manipulation\MouseScrollCommand.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\Manipulation\CommandStreamParser.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

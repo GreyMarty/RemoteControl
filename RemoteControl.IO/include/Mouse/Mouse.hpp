@@ -12,9 +12,9 @@ namespace RemoteControl
 			public ref class Mouse abstract sealed
 			{
 			public:
-				static Core::PointU GetPosition();
+				static Core::PointI GetPosition();
 
-				static void SetPosition(Core::PointU position);
+				static void SetPosition(Core::PointI position);
 
 				static void Move(Core::PointI delta);
 
