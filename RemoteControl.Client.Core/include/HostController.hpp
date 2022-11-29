@@ -47,6 +47,8 @@ namespace RemoteControl
 				void DrawBitmap();
 
 				void Decode();
+
+				void CleanUp();
 			};
 		}
 	}

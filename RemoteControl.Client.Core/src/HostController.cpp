@@ -48,8 +48,8 @@ namespace RemoteControl
 					"Remote Desktop",
 					SDL_WINDOWPOS_CENTERED,
 					SDL_WINDOWPOS_CENTERED,
-					displayMode.w - 100,
-					displayMode.h - 100,
+					displayMode.w * 0.9,
+					displayMode.h * 0.9,
 					SDL_WINDOW_BORDERLESS
 				);
 
@@ -96,8 +96,7 @@ namespace RemoteControl
 					SDL_RenderPresent(m_renderer);
 				}
 
-				SDL_DestroyWindow(m_window);
-				SDL_DestroyMutex(m_drawMutex);
+				CleanUp();
 			}
 
 			void HostController::ProcessEvent(const SDL_Event& event) 
@@ -208,6 +207,13 @@ namespace RemoteControl
 
 					SDL_UnlockMutex(m_drawMutex);
 				}
+			}
+
+			void HostController::CleanUp() 
+			{
+				SDL_DestroyWindow(m_window);
+				SDL_DestroyRenderer(m_renderer);
+				SDL_DestroyMutex(m_drawMutex);
 			}
 		}
 	}
