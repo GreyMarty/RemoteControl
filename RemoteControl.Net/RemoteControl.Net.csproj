@@ -6,8 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\RemoteControl.Net\RemoteControl.Net.csproj" />
-  </ItemGroup>
-
 </Project>
