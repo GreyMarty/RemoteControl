@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Text;
 using RemoteControl.Net.Enums;
+using RemoteControl.Server.Data;
 
 namespace RemoteControl.Server
 {
@@ -13,15 +14,14 @@ namespace RemoteControl.Server
         private readonly ICommandResolver<NetCommand, ProcessCommandCallback> _commandResolver;
         private readonly IConnectionStringProvider _connectionStringProvider;
 
-        private readonly Dictionary<EndPoint, Socket> _clients;
-        private readonly Dictionary<string, EndPoint> _endPoints;
+        private readonly IMap<string, EndPoint> _udpEndPoints;
 
-        private UdpClient _udpClient;
+        private readonly UdpClient _udpClient;
 
-        private bool _running;
+        
+        public bool IsRunning { get; private set; }
 
-
-        public int Port { get; init; }
+        public int Port { get; init; } 
 
 
         public delegate Task ClientConnectedHandler(object sender, IPEndPoint endPoint);
@@ -40,28 +40,25 @@ namespace RemoteControl.Server
 
         public CommandListener(
             int port, 
-            Dictionary<EndPoint, Socket> clients,
-            Dictionary<string, EndPoint> endPoints,
+            // Dependencies
+            IMap<string, EndPoint> _updEndPoints,
             IRouter router,
             ICommandResolver<NetCommand, ProcessCommandCallback> commandResolver, 
             IConnectionStringProvider connectionStringProvider
         )
         {
             _udpClient = new UdpClient(port);
-
-            Port = ((IPEndPoint)_udpClient.Client.LocalEndPoint).Port;
-
-            _clients = clients;
-            _endPoints = endPoints;
-
-            _router = router;
-            _commandResolver = commandResolver;
-
             _udpClient.Client.ReceiveTimeout = Timeout;
             _udpClient.Client.SendTimeout = Timeout;
 
-            BindCommands();
+            Port = ((IPEndPoint)_udpClient.Client.LocalEndPoint).Port;
+
+            _udpEndPoints = _updEndPoints;
+            _router = router;
+            _commandResolver = commandResolver;
             _connectionStringProvider = connectionStringProvider;
+
+            BindCommands();
         }
 
         public void Dispose()
@@ -71,11 +68,11 @@ namespace RemoteControl.Server
 
         public void Run()
         {
-            _running = true;
+            IsRunning = true;
 
-            var tasks = new HashSet<Task>();
+            var tasks = new List<Task>();
 
-            while (_running) 
+            while (IsRunning) 
             {
                 IPEndPoint endPoint = null;
                 byte[] resultBuffer = null;
@@ -103,7 +100,7 @@ namespace RemoteControl.Server
 
         public void Close() 
         {
-            _running = false;
+            IsRunning = false;
         }
 
         private void BindCommands() 
@@ -129,16 +126,14 @@ namespace RemoteControl.Server
         {
             string connectionString;
 
-            if (!_clients.ContainsKey(endPoint))
+            if (!_udpEndPoints.Reverse.ContainsKey(endPoint))
             {
-                _clients.Add(endPoint, null);
-
                 connectionString = _connectionStringProvider.Generate();
-                _endPoints.Add(connectionString, endPoint);
+                _udpEndPoints.Forward.Add(connectionString, endPoint);
             }
             else 
             {
-                connectionString = _endPoints.FirstOrDefault((pair) => pair.Value == endPoint).Key;
+                connectionString = _udpEndPoints.Reverse[endPoint];
             }
 
             var reply = new MemoryStream();
@@ -161,14 +156,14 @@ namespace RemoteControl.Server
 
         private async Task ProcessDisconnectCommandAsync(IPEndPoint endPoint, byte[] buffer) 
         {
-            var result = _clients.Remove(endPoint) ? NetResult.Ok : NetResult.Error;
+            var result = _udpEndPoints.Reverse.Remove(endPoint) ? NetResult.Ok : NetResult.Error;
 
             var tasks = new List<Task>();
 
             if (result == NetResult.Ok)
             {
-                var connectionString = _endPoints.FirstOrDefault((pair) => pair.Value == endPoint).Key;
-                _endPoints.Remove(connectionString);
+                var connectionString = _udpEndPoints.Reverse[endPoint];
+                _udpEndPoints.Forward.Remove(connectionString);
 
                 var task = ClientDisconnected?.Invoke(this, endPoint);
 
@@ -191,10 +186,11 @@ namespace RemoteControl.Server
 
             var tasks = new List<Task>();
 
-            if (_endPoints.ContainsKey(connectionString)) 
+            if (_udpEndPoints.Forward.ContainsKey(connectionString)) 
             {
-                var hostEndPoint = _endPoints[connectionString];
-                _router.Bind(hostEndPoint, endPoint);
+                var hostEndPoint = _udpEndPoints.Forward[connectionString];
+                
+                _router.Bind(connectionString, _udpEndPoints.Reverse[endPoint]);
 
                 result = NetResult.Ok;
 
@@ -219,10 +215,11 @@ namespace RemoteControl.Server
 
             var tasks = new List<Task>();
 
-            if (_endPoints.ContainsKey(connectionString)) 
+            if (_udpEndPoints.Forward.ContainsKey(connectionString)) 
             {
-                var hostEndPoint = _endPoints[connectionString];
-                _router.Unbind(hostEndPoint, endPoint);
+                var hostEndPoint = _udpEndPoints.Forward[connectionString];
+                
+                _router.Unbind(connectionString, _udpEndPoints.Reverse[endPoint]);
 
                 result = NetResult.Ok;
 

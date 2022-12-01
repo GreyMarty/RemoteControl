@@ -1,28 +1,32 @@
-﻿using System.Net;
-
-namespace RemoteControl.Server
+﻿namespace RemoteControl.Server
 {
     public class Router : IRouter
     {
-        private Dictionary<EndPoint, HashSet<EndPoint>> _routingTable;
+        private Dictionary<string, HashSet<string>> _routingTable;
 
 
         public Router()
         {
-            _routingTable = new Dictionary<EndPoint, HashSet<EndPoint>>();
+            _routingTable = new Dictionary<string, HashSet<string>>();
         }
 
-        public void Bind(EndPoint to, EndPoint what) 
+        public void Bind(string to, string what) 
         {
             if (!_routingTable.ContainsKey(to)) 
             {
-                _routingTable.Add(to, new HashSet<EndPoint>());
+                _routingTable.Add(to, new HashSet<string>());
+            }
+
+            if (!_routingTable.ContainsKey(what)) 
+            {
+                _routingTable.Add(what, new HashSet<string>());
             }
 
             _routingTable[to].Add(what);
+            _routingTable[what].Add(to);
         }
 
-        public void Unbind(EndPoint from, EndPoint what) 
+        public void Unbind(string from, string what) 
         {
             if (!_routingTable.ContainsKey(from)) 
             {
@@ -30,19 +34,26 @@ namespace RemoteControl.Server
             }
 
             _routingTable[from].Remove(what);
-        }
 
-        public IReadOnlyCollection<EndPoint> Resolve(EndPoint endPoint) 
-        {
-            if (!_routingTable.ContainsKey(endPoint)) 
+            if (!_routingTable.ContainsKey(what))
             {
-                return null;
+                return;
             }
 
-            return _routingTable[endPoint];
+            _routingTable[what].Remove(from);
         }
 
-        public IReadOnlyCollection<EndPoint> GetAll() 
+        public IReadOnlyCollection<string> Resolve(string connectionString) 
+        {
+            if (!_routingTable.ContainsKey(connectionString)) 
+            {
+                return Array.Empty<string>();
+            }
+
+            return _routingTable[connectionString];
+        }
+
+        public IReadOnlyCollection<string> GetAll() 
         {
             return _routingTable.Keys;
         }

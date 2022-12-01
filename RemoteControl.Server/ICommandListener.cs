@@ -7,10 +7,7 @@ using System.Threading.Tasks;
 
 namespace RemoteControl.Server
 {
-    public interface ICommandListener : IDisposable
+    public interface ICommandListener : IListener
     {
-        public int Port { get; }
-
-        public void Run();
     }
 }

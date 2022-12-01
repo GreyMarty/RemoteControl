@@ -1,16 +1,13 @@
-﻿using System.Net;
-using System.Net.Sockets;
-
-namespace RemoteControl.Server
+﻿namespace RemoteControl.Server
 {
     public interface IRouter
     {
-        public void Bind(EndPoint to, EndPoint what);
+        public void Bind(string to, string what);
 
-        public void Unbind(EndPoint from, EndPoint what);
+        public void Unbind(string from, string what);
 
-        public IReadOnlyCollection<EndPoint> Resolve(EndPoint endPoint);
+        public IReadOnlyCollection<string> Resolve(string connectionString);
 
-        public IReadOnlyCollection<EndPoint> GetAll();
+        public IReadOnlyCollection<string> GetAll();
     }
 }
