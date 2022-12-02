@@ -1,4 +1,5 @@
-﻿using RemoteControl.Net.Enums;
+﻿using log4net;
+using RemoteControl.Net.Enums;
 using RemoteControl.Server.Data;
 using System.Net;
 using System.Net.Sockets;
@@ -8,10 +9,13 @@ namespace RemoteControl.Server
 {
     public class DataListener : IDataListener
     {
-        private const int Timeout = 2000;
+        private const int AcceptTimeout = 2000;
+        private const int StreamTimeout = 30;
         private const int BufferSize = 4096;
 
         private readonly TcpListener _tcpListener;
+
+        private readonly ILog _logger;
 
         private readonly IRouter _router;
         private readonly IMap<string, EndPoint> _udpEndPoints;
@@ -34,12 +38,13 @@ namespace RemoteControl.Server
             int port,
             IRouter router,
             IMap<string, EndPoint> udpEndPoints,
-            IMap<string, EndPoint> tcpEndPoints
+            IMap<string, EndPoint> tcpEndPoints,
+            ILog logger
         )
         {
             _tcpListener = new TcpListener(iPAddress, port);
-            _tcpListener.Server.ReceiveTimeout = Timeout;
-            _tcpListener.Server.SendTimeout = Timeout;
+            _tcpListener.Server.ReceiveTimeout = AcceptTimeout;
+            _tcpListener.Server.SendTimeout = AcceptTimeout;
 
             _router = router;
             _udpEndPoints = udpEndPoints;
@@ -47,6 +52,8 @@ namespace RemoteControl.Server
 
             _sockets = new Dictionary<EndPoint, Socket>();
             _netStreams = new Dictionary<EndPoint, Stream>();
+
+            _logger = logger;
         }
 
         public void Dispose()
@@ -63,6 +70,7 @@ namespace RemoteControl.Server
             _dataThread.Start();
 
             _tcpListener.Start();
+            _logger.Info($"data listener running at port {Port}");
 
             var tasks = new List<Task>();
 
@@ -96,10 +104,10 @@ namespace RemoteControl.Server
 
         private void Listen() 
         {
+            var redirections = new Dictionary<EndPoint, Task>();
+
             while (IsRunning) 
             {
-                var tasks = new List<Task>();
-
                 if (_netStreams.Count < 2) 
                 {
                     continue;
@@ -109,13 +117,17 @@ namespace RemoteControl.Server
 
                 foreach (var endPoint in _netStreams.Keys) 
                 {
-                    tasks.Add(Redirect(endPoint));
+                    if (!redirections.ContainsKey(endPoint) || redirections[endPoint].IsCompleted)
+                    {
+                        redirections[endPoint] = Redirect(endPoint);
+                    }
                 }
 
                 _streamMutex.ReleaseMutex();
-
-                Task.WaitAll(tasks.ToArray());
             }
+
+            var tasks = redirections.Values.Append(Task.Delay(StreamTimeout));
+            Task.WaitAny(redirections.Values.ToArray());
         }
 
         private async Task ProcessAcceptedClientAsync(Socket socket) 
@@ -124,9 +136,11 @@ namespace RemoteControl.Server
             await socket.ReceiveAsync(connectionStringBytes, SocketFlags.None);
 
             var connectionsString = Encoding.UTF8.GetString(connectionStringBytes);
+            _logger.Info($"accepting {socket.RemoteEndPoint} with string \"{connectionsString}\"");
 
             if (!_udpEndPoints.Forward.ContainsKey(connectionsString)) 
             {
+                _logger.Error($"bad connection string");
                 await socket.SendAsync(new byte[] { (byte)NetResult.Error }, SocketFlags.None);
                 return;
             }
@@ -138,6 +152,7 @@ namespace RemoteControl.Server
             _netStreams[socket.RemoteEndPoint] = new NetworkStream(socket);
             _streamMutex.ReleaseMutex();
 
+            _logger.Info($"{socket.RemoteEndPoint} accepted");
             await socket.SendAsync(new byte[] { (byte)NetResult.Ok }, SocketFlags.None);
         }
 
@@ -149,7 +164,7 @@ namespace RemoteControl.Server
             var buffer = new byte[BufferSize];
             var readTask = stream.ReadAsync(buffer, 0, buffer.Length);
 
-            await Task.WhenAny(readTask, Task.Delay(Timeout));
+            await Task.WhenAny(readTask, Task.Delay(StreamTimeout));
 
             if (!readTask.IsCompleted) 
             {
@@ -163,7 +178,7 @@ namespace RemoteControl.Server
                 var sendEndPoint = _tcpEndPoints.Forward[sendConnectionString];
                 var sendStream = _netStreams[sendEndPoint];
 
-                tasks.Add(Task.WhenAny(sendStream.WriteAsync(buffer, 0, buffer.Length), Task.Delay(Timeout)));
+                tasks.Add(Task.WhenAny(sendStream.WriteAsync(buffer, 0, buffer.Length), Task.Delay(StreamTimeout)));
             }
 
             await Task.WhenAll(tasks);

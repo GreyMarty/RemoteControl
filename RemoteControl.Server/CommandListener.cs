@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using log4net;
 using RemoteControl.Net.Enums;
 using RemoteControl.Server.Data;
 
@@ -9,7 +10,9 @@ namespace RemoteControl.Server
     public class CommandListener : ICommandListener
     {
         private const int Timeout = 2000;
-        
+
+        private readonly ILog _logger;
+
         private readonly IRouter _router;
         private readonly ICommandResolver<NetCommand, ProcessCommandCallback> _commandResolver;
         private readonly IConnectionStringProvider _connectionStringProvider;
@@ -44,7 +47,8 @@ namespace RemoteControl.Server
             IMap<string, EndPoint> _updEndPoints,
             IRouter router,
             ICommandResolver<NetCommand, ProcessCommandCallback> commandResolver, 
-            IConnectionStringProvider connectionStringProvider
+            IConnectionStringProvider connectionStringProvider,
+            ILog logger
         )
         {
             _udpClient = new UdpClient(port);
@@ -57,6 +61,7 @@ namespace RemoteControl.Server
             _router = router;
             _commandResolver = commandResolver;
             _connectionStringProvider = connectionStringProvider;
+            _logger = logger;
 
             BindCommands();
         }
@@ -68,6 +73,8 @@ namespace RemoteControl.Server
 
         public void Run()
         {
+            _logger.Info($"command listener running at port {Port}...");
+
             IsRunning = true;
 
             var tasks = new List<Task>();
@@ -87,7 +94,7 @@ namespace RemoteControl.Server
                     // not WSATIMEDOUT
                     if (e.ErrorCode != 10060) 
                     {
-                        throw e;
+                        _logger.Error($"command listener has thrown an exception: {e.Message}");
                     }
                 }
 
@@ -124,6 +131,8 @@ namespace RemoteControl.Server
 
         private async Task ProcessConnectCommandAsync(IPEndPoint endPoint, byte[] buffer) 
         {
+            _logger.Info($"{endPoint} connecting...");
+
             string connectionString;
 
             if (!_udpEndPoints.Reverse.ContainsKey(endPoint))
@@ -149,6 +158,7 @@ namespace RemoteControl.Server
                 tasks.Add(task);
             }
 
+            _logger.Info($"replying to {endPoint} with \"{connectionString}\"...");
             tasks.Add(_udpClient.SendAsync(reply.ToArray(), (int)reply.Length, endPoint));
 
             await Task.WhenAll(tasks);
@@ -156,6 +166,7 @@ namespace RemoteControl.Server
 
         private async Task ProcessDisconnectCommandAsync(IPEndPoint endPoint, byte[] buffer) 
         {
+            _logger.Info($"{endPoint} disconnecting...");
             var result = _udpEndPoints.Reverse.Remove(endPoint) ? NetResult.Ok : NetResult.Error;
 
             var tasks = new List<Task>();
@@ -167,10 +178,16 @@ namespace RemoteControl.Server
 
                 var task = ClientDisconnected?.Invoke(this, endPoint);
 
-                if (task is not null) 
+                if (task is not null)
                 {
                     tasks.Add(task);
                 }
+
+                _logger.Info($"{endPoint} disconnected");
+            }
+            else 
+            {
+                _logger.Info($"{endPoint} was not connected");
             }
 
             tasks.Add(_udpClient.SendAsync(new byte[] { (byte)result }, 1, endPoint));
@@ -181,25 +198,44 @@ namespace RemoteControl.Server
         private async Task ProcessTakeControlCommandAsync(IPEndPoint endPoint, byte[] buffer) 
         {
             var connectionString = Encoding.UTF8.GetString(buffer, 1, buffer.Length - 1);
+            _logger.Info($"{endPoint} trying to take control of \"{connectionString}\"...");
 
             var result = NetResult.Error;
 
             var tasks = new List<Task>();
 
-            if (_udpEndPoints.Forward.ContainsKey(connectionString)) 
+            if (_udpEndPoints.Reverse.ContainsKey(endPoint) && _udpEndPoints.Forward.ContainsKey(connectionString))
             {
-                var hostEndPoint = _udpEndPoints.Forward[connectionString];
-                
+                var hostEndPoint = _udpEndPoints.Forward[connectionString] as IPEndPoint;
+                var requestConnectionString = _udpEndPoints.Reverse[endPoint];
+
+                var bufferStream = new MemoryStream();
+                bufferStream.WriteByte((byte)NetCommand.TakeControl);
+                bufferStream.Write(Encoding.UTF8.GetBytes(requestConnectionString));
+                await _udpClient.SendAsync(bufferStream.ToArray(), (int)bufferStream.Length, hostEndPoint);
+
+                var response = await _udpClient.ReceiveAsync();
+
+                if (response.Buffer.Length == 0 || response.Buffer[0] != (byte)NetResult.Ok) 
+                {
+                    _logger.Info($"{hostEndPoint} rejected request");
+                    return;
+                }
+
                 _router.Bind(connectionString, _udpEndPoints.Reverse[endPoint]);
 
                 result = NetResult.Ok;
 
                 var task = ClientTookControl?.Invoke(this, (IPEndPoint)hostEndPoint, endPoint);
 
-                if (task is not null) 
+                if (task is not null)
                 {
                     tasks.Add(task);
                 }
+            }
+            else 
+            {
+                _logger.Info($"{endPoint} failed to take control of \"{connectionString}\"");
             }
 
             tasks.Add(_udpClient.SendAsync(new byte[] { (byte)result }, 1, endPoint));

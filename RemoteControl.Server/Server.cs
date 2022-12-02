@@ -1,10 +1,13 @@
-﻿using RemoteControl.Server.Data;
+﻿using log4net;
+using RemoteControl.Server.Data;
 using System.Net;
 
 namespace RemoteControl.Server
 {
     public class Server
     {
+        private readonly ILog _logger;
+
         private ICommandListener _commandListener;
         private Thread _commandListenerThread;
 
@@ -21,7 +24,7 @@ namespace RemoteControl.Server
         public int TcpPort => _dataListener.Port;
 
 
-        public Server(int udpPort, int tcpPort) 
+        public Server(int udpPort, int tcpPort, ILog logger) 
         {
             _tcpEndPoints = new Map<string, EndPoint>();
             _udpEndPoints = new Map<string, EndPoint>();
@@ -42,10 +45,14 @@ namespace RemoteControl.Server
                 _udpEndPoints,
                 _tcpEndPoints
             );
+
+            _logger = logger;
         }
 
         public void Run() 
         {
+            _logger.Info("server started...");
+
             _commandListenerThread = new Thread(_commandListener.Run);
             _commandListenerThread.Start();
 
