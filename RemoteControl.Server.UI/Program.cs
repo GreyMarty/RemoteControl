@@ -1,9 +1,13 @@
 using log4net;
 using RemoteControl.Server;
-
+using System.Configuration;
 
 var logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-var server = new Server(40040, 40040, logger);
+var server = new Server(
+    int.Parse(ConfigurationManager.AppSettings["UdpPort"]),
+    int.Parse(ConfigurationManager.AppSettings["TcpPort"]),
+    logger
+);
 
 server.Run();
 

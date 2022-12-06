@@ -13,6 +13,7 @@ using RemoteControl.IO.Screen;
 using System.Threading;
 using RemoteControl.IO.Manipulation;
 using System.Diagnostics;
+using System.Configuration;
 
 namespace RemoteControl.Client.UI
 {
@@ -43,7 +44,7 @@ namespace RemoteControl.Client.UI
 
         public ClientController()
         {
-            _client = new Client(IPAddress.Parse("192.168.217.119"), 40040, 40040);
+            _client = new Client(IPAddress.Parse(ConfigurationManager.), 40040, 40040);
             _client.TakenControl += TakenControl;
             _client.ForsakenControl += ForsakenControl;
         }
