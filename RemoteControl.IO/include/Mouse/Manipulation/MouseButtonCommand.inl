@@ -8,7 +8,7 @@ namespace RemoteControl
 			{
 				inline int MouseButtonCommand::DataSize::get() 
 				{
-					return 2 * sizeof(int);
+					return 2 * sizeof(uint8_t);
 				}
 
 				inline MouseButton MouseButtonCommand::Button::get()

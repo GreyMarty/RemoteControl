@@ -269,6 +269,9 @@
     <ProjectReference Include="..\RemoteControl.Core\RemoteControl.Core.vcxproj">
       <Project>{01bea466-98a5-46aa-9d91-e53fe3e0eb58}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\RemoteControl.IO\RemoteControl.Input.vcxproj">
+      <Project>{7de87ab4-082f-465f-a41d-db3fb30e4529}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

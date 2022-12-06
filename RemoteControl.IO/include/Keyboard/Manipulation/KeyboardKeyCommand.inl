@@ -8,17 +8,17 @@ namespace RemoteControl
 			{
 				inline int KeyboardKeyCommand::DataSize::get() 
 				{
-					return sizeof(int) * 2;
+					return sizeof(uint8_t) + sizeof(uint32_t);
 				}
 
-				inline KeyboardKey KeyboardKeyCommand::Key::get() 
+				inline uint32_t KeyboardKeyCommand::Scancode::get() 
 				{
-					return m_key;
+					return m_scanCode;
 				}
 
-				inline void KeyboardKeyCommand::Key::set(KeyboardKey value) 
+				inline void KeyboardKeyCommand::Scancode::set(uint32_t value) 
 				{
-					m_key = value;
+					m_scanCode = value;
 				}
 
 				inline KeyboardKeyEvent KeyboardKeyCommand::KeyEvent::get()

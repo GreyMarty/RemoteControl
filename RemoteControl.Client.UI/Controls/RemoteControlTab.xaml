@@ -1,0 +1,157 @@
+﻿<UserControl x:Class="RemoteControl.Client.UI.Controls.RemoteControlTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RemoteControl.Client.UI.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <Style x:Key="ConnectButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="RootElement"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="5">
+                            <ContentPresenter 
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                    <Setter Property="Background" Value="{StaticResource ElementSecondary}"/>
+                    <Setter Property="Content" Value="Disconnect"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsConnected}" Value="False">
+                    <Setter Property="Background" Value="{StaticResource ElementPrimary}"/>
+                    <Setter Property="Content" Value="Connect"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid>
+
+        <Grid
+            VerticalAlignment="Top"
+            Height="230">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <DockPanel
+                Grid.Row="0"
+                Grid.Column="0">
+
+                <Label
+                    Margin="15,0,10,0"
+                    DockPanel.Dock="Top"
+                    Foreground="{StaticResource ForegroundPrimary}"
+                    FontSize="20"
+                    Content="Grant Remote Control">
+                </Label>
+
+                <Border
+                    Margin="20,5,10,20"
+                    BorderBrush="{StaticResource BackgroundPrimary02dp}"
+                    BorderThickness="3"
+                    CornerRadius="5">
+                    <DockPanel
+                        Background="{StaticResource BackgroundPrimary02dp}"
+                        DockPanel.Dock="Top">
+
+                        <Label
+                            DockPanel.Dock="Top"
+                            Margin="10, 10, 10, 0"
+                            Foreground="{StaticResource ForegroundPrimary}"
+                            FontSize="20"
+                            FontWeight="Bold"
+                            Content="Your Secret String">
+                        </Label>
+
+                        <Label
+                            DockPanel.Dock="Top"
+                            Margin="10,-5,10,0"
+                            Foreground="{StaticResource ForegroundPrimary}"
+                            FontSize="24"
+                            Content="{Binding Path=ConnectionString, UpdateSourceTrigger=PropertyChanged}">
+                        </Label>
+
+                        <Label
+                            DockPanel.Dock="Bottom"
+                            Margin="10,20,10,0"
+                            Foreground="{StaticResource ForegroundSecondary}"
+                            FontSize="18"
+                            ToolTip="Secret String is a unique identifier that can be used to control your computer.">
+
+                            <TextBlock TextDecorations="Underline">ⓘ More Information</TextBlock>
+                    
+                        </Label>
+                
+                    </DockPanel>
+                </Border>
+
+            </DockPanel>
+
+            <DockPanel
+                Grid.Row="0"
+                Grid.Column="1">
+
+                <Label
+                    Margin="5,0,10,0"
+                    DockPanel.Dock="Top"
+                    Foreground="{StaticResource ForegroundPrimary}"
+                    FontSize="20"
+                    Content="Control Another Computer"/>
+
+                <Border
+                    Margin="10,5,20,20"
+                    BorderBrush="{StaticResource BackgroundPrimary02dp}"
+                    BorderThickness="3"
+                    CornerRadius="5">
+                    <DockPanel
+                        Background="{StaticResource BackgroundPrimary02dp}"
+                        DockPanel.Dock="Top"
+                        LastChildFill="false">
+
+                        <TextBox 
+                            x:Name="ConnectionStringTextBox"
+                            Margin="10,20,10,0"
+                            DockPanel.Dock="Top"
+                            Background="{StaticResource BackgroundPrimary16dp}"
+                            Foreground="{StaticResource ForegroundPrimary}"
+                            BorderThickness="0"
+                            Height="45"
+                            Padding="5"
+                            VerticalContentAlignment="Center"
+                            FontSize="20"
+                            MaxLength="8"
+                            Text="AbCDefGh"/>
+
+                        <Button 
+                            Margin="10, 15, 10, 10"
+                            DockPanel.Dock="top"
+                            Width="110"
+                            Height="50"
+                            HorizontalAlignment="Left"
+                            FontSize="20"
+                            Style="{StaticResource ConnectButtonStyle}"
+                            FontWeight="DemiBold"
+                            Click="ButtonConnect_Click"/>
+
+                    </DockPanel>
+                </Border>
+
+            </DockPanel>
+        </Grid>
+
+    </Grid>
+</UserControl>

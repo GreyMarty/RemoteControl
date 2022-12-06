@@ -87,7 +87,6 @@ namespace RemoteControl.Server
                 try
                 {
                     resultBuffer = _udpClient.Receive(ref endPoint);
-
                 }
                 catch (SocketException e) 
                 {
@@ -97,6 +96,8 @@ namespace RemoteControl.Server
                         _logger.Error($"command listener has thrown an exception: {e.Message}");
                     }
                 }
+
+                tasks = tasks.Where(t => !t.IsCompleted).ToList();
 
                 if (resultBuffer is not null) 
                 {
@@ -245,16 +246,28 @@ namespace RemoteControl.Server
 
         private async Task ProcessForsakeControlCommandAsync(IPEndPoint endPoint, byte[] buffer) 
         {
-            var connectionString = Encoding.UTF8.GetString(buffer, 1, buffer.Length - 1);
-
             var result = NetResult.Error;
 
             var tasks = new List<Task>();
 
-            if (_udpEndPoints.Forward.ContainsKey(connectionString)) 
+            if (_udpEndPoints.Reverse.ContainsKey(endPoint)) 
             {
-                var hostEndPoint = _udpEndPoints.Forward[connectionString];
-                
+                var connectionString = _udpEndPoints.Reverse[endPoint];
+                var hostConnectionString = _router.Resolve(connectionString).FirstOrDefault();
+
+                if (hostConnectionString is null) 
+                {
+                    _logger.Info($"could not resolve connection string \"{connectionString}\"");
+                    return;
+                }
+
+                var hostEndPoint = (IPEndPoint)_udpEndPoints.Forward[hostConnectionString];
+
+                var bufferStream = new MemoryStream();
+                bufferStream.WriteByte((byte)NetCommand.ForsakeControl);
+                bufferStream.Write(Encoding.UTF8.GetBytes(connectionString));
+                await _udpClient.SendAsync(bufferStream.ToArray(), (int)bufferStream.Length, hostEndPoint);
+
                 _router.Unbind(connectionString, _udpEndPoints.Reverse[endPoint]);
 
                 result = NetResult.Ok;

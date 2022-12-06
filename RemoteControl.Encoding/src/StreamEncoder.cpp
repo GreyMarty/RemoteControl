@@ -102,6 +102,8 @@ namespace RemoteControl
 
 			sws_scale(swsContext, m_bitmapFrame->data, m_bitmapFrame->linesize, 0, m_bitmapFrame->height, m_videoFrame->data, m_videoFrame->linesize);
 
+			sws_freeContext(swsContext);
+
 			bitmap->UnlockBits();
 
 			m_videoFrame->pts = m_iframe++;
@@ -143,11 +145,23 @@ namespace RemoteControl
 				array<uint8_t>^ buffer = gcnew array<uint8_t>(packet->size);
 				Marshal::Copy(static_cast<IntPtr>(packet->data), buffer, 0, packet->size);
 
-				outStream->Write(buffer, 0, buffer->Length);
+				try
+				{
+					if (outStream == nullptr) 
+					{
+						av_packet_unref(packet);
+						return;
+					}
 
-				milliseconds timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-				Marshal::Copy(static_cast<IntPtr>(&timestamp), buffer, 0, sizeof(milliseconds));
-				outStream->Write(buffer, 0, sizeof(milliseconds));
+					outStream->Write(buffer, 0, buffer->Length);
+
+					milliseconds timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+					Marshal::Copy(static_cast<IntPtr>(&timestamp), buffer, 0, sizeof(milliseconds));
+					outStream->Write(buffer, 0, sizeof(milliseconds));
+				}
+				catch (System::Exception^) 
+				{
+				}
 				
 				av_packet_unref(packet);
 			}

@@ -1,6 +1,7 @@
 ﻿using log4net;
 using RemoteControl.Net.Enums;
 using RemoteControl.Server.Data;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -10,7 +11,7 @@ namespace RemoteControl.Server
     public class DataListener : IDataListener
     {
         private const int AcceptTimeout = 2000;
-        private const int StreamTimeout = 30;
+        private const int StreamTimeout = 100;
         private const int BufferSize = 4096;
 
         private readonly TcpListener _tcpListener;
@@ -21,8 +22,8 @@ namespace RemoteControl.Server
         private readonly IMap<string, EndPoint> _udpEndPoints;
         private readonly IMap<string, EndPoint> _tcpEndPoints;
 
-        private readonly IDictionary<EndPoint, Socket> _sockets;
-        private readonly IDictionary<EndPoint, Stream> _netStreams;
+        private IDictionary<EndPoint, Socket> _sockets;
+        private IDictionary<EndPoint, Stream> _netStreams;
 
         private Thread _dataThread;
         private Mutex _streamMutex;
@@ -102,6 +103,11 @@ namespace RemoteControl.Server
             
         }
 
+        public void Disconnect(string connectionString) 
+        {
+
+        }
+
         private void Listen() 
         {
             var redirections = new Dictionary<EndPoint, Task>();
@@ -112,6 +118,10 @@ namespace RemoteControl.Server
                 {
                     continue;
                 }
+
+                //_sockets = _sockets.Where(p => p.Value.Connected).ToDictionary(p => p.Key, p => p.Value);
+                //_netStreams = _netStreams.Where(p => _sockets.ContainsKey(p.Key)).ToDictionary(p => p.Key, p => p.Value);
+                //redirections = redirections.Where(p => _sockets.ContainsKey(p.Key)).ToDictionary(p => p.Key, p => p.Value);
 
                 _streamMutex.WaitOne();
 
@@ -124,10 +134,10 @@ namespace RemoteControl.Server
                 }
 
                 _streamMutex.ReleaseMutex();
-            }
 
-            var tasks = redirections.Values.Append(Task.Delay(StreamTimeout));
-            Task.WaitAny(redirections.Values.ToArray());
+                var tasks = redirections.Values.Append(Task.Delay(StreamTimeout));
+                Task.WaitAny(redirections.Values.ToArray());
+            }
         }
 
         private async Task ProcessAcceptedClientAsync(Socket socket) 
@@ -164,7 +174,7 @@ namespace RemoteControl.Server
             var buffer = new byte[BufferSize];
             var readTask = stream.ReadAsync(buffer, 0, buffer.Length);
 
-            await Task.WhenAny(readTask, Task.Delay(StreamTimeout));
+            await Task.WhenAny(readTask/*, Task.Delay(StreamTimeout)*/);
 
             if (!readTask.IsCompleted) 
             {
@@ -173,12 +183,16 @@ namespace RemoteControl.Server
 
             var tasks = new List<Task>();
 
+            int count = readTask.Result;
+
             foreach (var sendConnectionString in _router.Resolve(connectionString))
             {
+
                 var sendEndPoint = _tcpEndPoints.Forward[sendConnectionString];
                 var sendStream = _netStreams[sendEndPoint];
 
-                tasks.Add(Task.WhenAny(sendStream.WriteAsync(buffer, 0, buffer.Length), Task.Delay(StreamTimeout)));
+                //Debug.WriteLine($"Sending {count} bytes of data from {endPoint} to {sendEndPoint}");
+                tasks.Add(Task.WhenAny(sendStream.WriteAsync(buffer, 0, count)/*, Task.Delay(StreamTimeout)*/));
             }
 
             await Task.WhenAll(tasks);

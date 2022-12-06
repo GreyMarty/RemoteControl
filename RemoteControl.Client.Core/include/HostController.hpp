@@ -30,6 +30,9 @@ namespace RemoteControl
 
 				bool m_running;
 
+				int m_width;
+				int m_height;
+
 				RemoteControl::Core::IBitmap^ m_screen;
 
 				System::Threading::Thread^ m_decoderThread;

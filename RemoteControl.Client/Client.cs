@@ -2,15 +2,16 @@
 using System.Net;
 using System.Net.Sockets;
 using RemoteControl.Net.Enums;
+using System.Diagnostics;
 
 namespace RemoteControl.Client
 {
     public class Client
     {
-        private const int Timeout = 2000;
+        private const int Timeout = 1000;
 
         private readonly UdpClient _udpClient;
-        private readonly TcpClient _tcpClient;
+        private TcpClient _tcpClient;
 
         private readonly IPEndPoint _udpEndPoint;
         private readonly IPEndPoint _tcpEndPoint;
@@ -19,9 +20,18 @@ namespace RemoteControl.Client
         private Thread _listenThread;
 
 
+        public bool IsConnected { get; private set; }
+
         public string ConnectionString { get; private set; }
 
         public Stream NetworkStream { get; private set; }
+
+
+        public delegate void TakenControlHandler(object sender, string connectionString);
+        public event TakenControlHandler TakenControl;
+
+        public delegate void ForsakenControlHandler(object sender);
+        public event ForsakenControlHandler ForsakenControl;
 
 
         public Client(IPAddress iPAddress, int updPort, int tcpPort)
@@ -29,8 +39,6 @@ namespace RemoteControl.Client
             _udpClient = new UdpClient();
             _udpClient.Client.ReceiveTimeout = Timeout;
             _udpClient.Client.SendTimeout = Timeout;
-
-            _tcpClient = new TcpClient();
 
             _udpEndPoint = new IPEndPoint(iPAddress, updPort);
             _tcpEndPoint = new IPEndPoint(iPAddress, tcpPort);
@@ -44,7 +52,7 @@ namespace RemoteControl.Client
             var recieveTask = _udpClient.ReceiveAsync();
             await Task.WhenAny(recieveTask, Task.Delay(Timeout));
 
-            if (!recieveTask.IsCompleted) 
+            if (!recieveTask.IsCompleted || !recieveTask.IsCompletedSuccessfully) 
             {
                 return NetResult.Error;
             }
@@ -58,9 +66,20 @@ namespace RemoteControl.Client
 
             ConnectionString = Encoding.UTF8.GetString(buffer, 1, buffer.Length - 1);
 
+            IsConnected = true;
             StartListening();
 
             return NetResult.Ok;
+        }
+
+        public async Task DisconnectAsync() 
+        {
+            await ForsakeControlAsync();
+
+            await Task.WhenAny(
+                _udpClient.SendAsync(new byte[] { (byte)NetCommand.Disconnect }, 1, _udpEndPoint),
+                Task.Delay(Timeout)
+            ); ;
         }
 
         public async Task<NetResult> TakeControlAsync(string connectionString) 
@@ -77,7 +96,7 @@ namespace RemoteControl.Client
             var sendTask = _udpClient.SendAsync(streamBuffer.ToArray(), (int)streamBuffer.Length, _udpEndPoint);
             await Task.WhenAny(sendTask, Task.Delay(Timeout));
 
-            if (!sendTask.IsCompleted) 
+            if (!sendTask.IsCompleted || !sendTask.IsCompletedSuccessfully) 
             {
                 StartListening();
                 return NetResult.Error;
@@ -86,7 +105,7 @@ namespace RemoteControl.Client
             var recieveTask = _udpClient.ReceiveAsync();
             await Task.WhenAny(recieveTask, Task.Delay(Timeout));
 
-            if (!recieveTask.IsCompleted) 
+            if (!recieveTask.IsCompleted || !recieveTask.IsCompletedSuccessfully) 
             {
                 StartListening();
                 return NetResult.Error;
@@ -100,11 +119,44 @@ namespace RemoteControl.Client
                 return NetResult.Error;
             }
 
+            StartListening();
             return await ConnectTcpAsync();
         }
 
-        private async Task<NetResult> ConnectTcpAsync() 
+        public async Task ForsakeControlAsync() 
         {
+            await Task.WhenAny(
+                _udpClient.SendAsync(new byte[] { (byte)NetCommand.ForsakeControl }, 1, _udpEndPoint),
+                Task.Delay(Timeout)
+            );
+
+            CloseTcpConnection();
+        }
+
+        private void NotifyForsakenControl() 
+        {
+            ForsakenControl?.Invoke(this);
+            CloseTcpConnection();
+        }
+
+        private void CloseTcpConnection() 
+        {
+            if (_tcpClient?.Connected ?? false)
+            {
+                _tcpClient?.Close();
+            }
+
+            NetworkStream = null;
+        }
+
+        private async Task<NetResult> ConnectTcpAsync()
+        {
+            if (_tcpClient?.Connected ?? false) 
+            {
+                return NetResult.Ok;
+            }
+
+            _tcpClient = new TcpClient();
             _tcpClient.Connect(_tcpEndPoint);
 
             var stream = _tcpClient.GetStream();
@@ -123,8 +175,11 @@ namespace RemoteControl.Client
 
         private void StartListening() 
         {
-            _listenThread = new Thread(Listen);
-            _listenThread.Start();
+            if (IsConnected)
+            {
+                _listenThread = new Thread(Listen);
+                _listenThread.Start();
+            }
         }
 
         private void StopListening() 
@@ -155,11 +210,25 @@ namespace RemoteControl.Client
 
                 if (buffer is not null) 
                 {
-                    _udpClient.Send(new byte[] { (byte)NetResult.Ok }, _udpEndPoint);
-                    _isListening = false;
+                    try
+                    {
+                        switch ((NetCommand)buffer[0])
+                        {
+                            case NetCommand.TakeControl:
+                                _udpClient.Send(new byte[] { (byte)NetResult.Ok }, _udpEndPoint);
+                                Task.WaitAny(Task.Run(ConnectTcpAsync), Task.Delay(Timeout));
+                                TakenControl?.Invoke(this, Encoding.UTF8.GetString(buffer, 1, buffer.Length - 1));
+                                break;
+                            case NetCommand.ForsakeControl:
+                                NotifyForsakenControl();
+                                break;
+                        };
 
-                    Task.WaitAny(Task.Run(ConnectTcpAsync), Task.Delay(Timeout));
-                    return;
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine($"Listen: {e}");
+                    }
                 }
             }
         }

@@ -36,14 +36,16 @@ namespace RemoteControl.Server
                 _udpEndPoints,
                 _router,
                 new NetCommandResolver<CommandListener.ProcessCommandCallback>(),
-                new ConnectionStringProvider()
+                new ConnectionStringProvider(),
+                logger
             );
 
             _dataListener = new DataListener(
-                IPAddress.Any, 0,
+                IPAddress.Any, tcpPort,
                 _router,
                 _udpEndPoints,
-                _tcpEndPoints
+                _tcpEndPoints,
+                logger
             );
 
             _logger = logger;

@@ -1,0 +1,87 @@
+﻿<UserControl x:Class="RemoteControl.Client.UI.Controls.Header"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RemoteControl.Client.UI.Controls"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             d:DesignHeight="45" d:DesignWidth="800">
+    
+    <UserControl.Resources>
+        <Thickness x:Key="ButtonMargin">15, 0, 0, 0</Thickness>
+        <Thickness x:Key="HeaderMargin">10, 0, 0, 0</Thickness>
+        <Thickness x:Key="ButtonGroupMargin">0, 0, 20, 0</Thickness>
+
+        <sys:Double x:Key="ButtonSize">24</sys:Double>
+    </UserControl.Resources>
+
+    <Grid
+        Background="{StaticResource BackgroundPrimary16dp}">
+
+        <Label 
+            Foreground="{StaticResource ForegroundPrimary}"
+            VerticalAlignment="Center"
+            Margin="{StaticResource HeaderMargin}"
+            FontSize="25" 
+            FontWeight="Bold"
+            Content="NET Marshal">
+        </Label>
+
+        <StackPanel
+            Margin="{StaticResource ButtonGroupMargin}"
+            Orientation="Horizontal"
+            Grid.Column="1" HorizontalAlignment="Right">
+
+            <Button 
+                Margin="{StaticResource ButtonMargin}"
+                Grid.Column="0"
+                BorderThickness="0"
+                Background="Transparent"
+                Width="{StaticResource ButtonSize}"
+                Height="{StaticResource ButtonSize}">
+                
+                <Path 
+                    Data="{StaticResource ShareIcon}"
+                    Fill="{StaticResource ElementPrimary}"
+                    Stretch="Uniform">
+                </Path>
+
+            </Button>
+
+            <Button 
+                Margin="{StaticResource ButtonMargin}"
+                Grid.Column="1"
+                BorderThickness="0"
+                Background="Transparent"
+                Width="{StaticResource ButtonSize}"
+                Height="{StaticResource ButtonSize}">
+
+                <Path
+                    Data="{StaticResource SettingsIcon}"
+                    Fill="{StaticResource ElementPrimary}"
+                    Stretch="Uniform">
+                </Path>
+                
+            </Button>
+
+            <Button 
+                Margin="{StaticResource ButtonMargin}"
+                Grid.Column="2"
+                BorderThickness="0"
+                Background="Transparent"
+                Width="{StaticResource ButtonSize}"
+                Height="{StaticResource ButtonSize}">
+
+                <Path
+                    Data="{StaticResource UserIcon}"
+                    Fill="{StaticResource ElementPrimary}"
+                    Stretch="Uniform">
+                </Path>
+                
+            </Button>
+
+        </StackPanel>
+        
+    </Grid>
+</UserControl>

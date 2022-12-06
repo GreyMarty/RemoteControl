@@ -11,7 +11,7 @@ using namespace System::IO;
 using namespace System::Runtime::InteropServices;
 using namespace RemoteControl::IO::Manipulation;
 
-namespace RemoteControl 
+namespace RemoteControl
 {
 	namespace IO 
 	{
@@ -23,42 +23,42 @@ namespace RemoteControl
 				{
 					if (m_keyEvent.HasFlag(KeyboardKeyEvent::Press) && m_keyEvent.HasFlag(KeyboardKeyEvent::Release)) 
 					{
-						Keyboard::ClickKey(m_key);
+						Keyboard::ClickKey((KeyboardKey)m_scanCode);
 					}
 					else if (m_keyEvent.HasFlag(KeyboardKeyEvent::Press)) 
 					{
-						Keyboard::PressKey(m_key);
+						Keyboard::PressKey((KeyboardKey)m_scanCode);
 					}
 					else if (m_keyEvent.HasFlag(KeyboardKeyEvent::Release)) 
 					{
-						Keyboard::ReleaseKey(m_key);
+						Keyboard::ReleaseKey((KeyboardKey)m_scanCode);
 					}
 				}
 
 				int KeyboardKeyCommand::WriteTo(Stream^ stream) 
 				{
 					stream->WriteByte((uint8_t)CommandCode::KeyboardKey);
-					stream->Write(BitConverter::GetBytes((int)m_key));
-					stream->Write(BitConverter::GetBytes((int)m_keyEvent));
+					stream->Write(BitConverter::GetBytes(m_scanCode));
+					stream->WriteByte((uint8_t)m_keyEvent);
 
-					return sizeof(int) * 2 + 1;
+					return sizeof(uint8_t) + sizeof(uint32_t) + 1;
 				}
 
 				KeyboardKeyCommand^ KeyboardKeyCommand::Parse(Stream^ stream)
 				{
-					const int targetBytes = sizeof(int) * 2;
+					const int targetBytes = sizeof(uint8_t) + sizeof(uint32_t);
 					int nbytes = 0;
 
-					int key;
-					int keyEvent;
+					uint32_t scanCode;
+					uint8_t keyEvent;
 
 					array<uint8_t>^ buffer = gcnew array<uint8_t>(sizeof(int));
 
 					nbytes += stream->Read(buffer);
-					Marshal::Copy(buffer, 0, static_cast<IntPtr>(&key), sizeof(int));
+					Marshal::Copy(buffer, 0, static_cast<IntPtr>(&scanCode), sizeof(uint32_t));
 
 					nbytes += stream->Read(buffer);
-					Marshal::Copy(buffer, 0, static_cast<IntPtr>(&keyEvent), sizeof(int));
+					Marshal::Copy(buffer, 0, static_cast<IntPtr>(&keyEvent), sizeof(uint8_t));
 
 					if (nbytes < targetBytes) 
 					{
@@ -67,8 +67,10 @@ namespace RemoteControl
 					}
 
 					KeyboardKeyCommand^ command = gcnew KeyboardKeyCommand();
-					command->Key = (KeyboardKey)key;
+					command->Scancode = scanCode;
 					command->KeyEvent = (KeyboardKeyEvent)keyEvent;
+
+					stream->Write(gcnew array<uint8_t> { 0, 0, 0, 0, 0, 0, 0, 0 });
 
 					return command;
 				}
