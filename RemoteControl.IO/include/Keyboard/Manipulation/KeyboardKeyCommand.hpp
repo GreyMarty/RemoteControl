@@ -21,10 +21,10 @@ namespace RemoteControl
 						int get();
 					}
 
-					property KeyboardKey Key 
+					property uint32_t Scancode
 					{
-						KeyboardKey get();
-						void set(KeyboardKey value);
+						uint32_t get();
+						void set(uint32_t value);
 					}
 
 					property KeyboardKeyEvent KeyEvent 
@@ -41,7 +41,7 @@ namespace RemoteControl
 					static KeyboardKeyCommand^ Parse(System::IO::Stream^ stream);
 
 				private:
-					KeyboardKey m_key;
+					uint32_t m_scanCode;
 					KeyboardKeyEvent m_keyEvent;
 				};
 			}

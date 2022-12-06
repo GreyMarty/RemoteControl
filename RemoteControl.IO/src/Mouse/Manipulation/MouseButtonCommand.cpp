@@ -36,13 +36,13 @@ namespace RemoteControl
 				{
 					MouseButtonCommand^ command = gcnew MouseButtonCommand();
 
-					int mouseButton;
-					int mouseButtonEvent;
+					uint8_t mouseButton;
+					uint8_t mouseButtonEvent;
 
-					Marshal::Copy(buffer, offset, static_cast<IntPtr>(&mouseButton), sizeof(int));
+					Marshal::Copy(buffer, offset, static_cast<IntPtr>(&mouseButton), sizeof(uint8_t));
 					offset += sizeof(int);
 
-					Marshal::Copy(buffer, offset, static_cast<IntPtr>(&mouseButtonEvent), sizeof(int));
+					Marshal::Copy(buffer, offset, static_cast<IntPtr>(&mouseButtonEvent), sizeof(uint8_t));
 
 					command->m_button = (MouseButton)mouseButton;
 					command->m_buttonEvent = (MouseButtonEvent)mouseButtonEvent;
@@ -52,19 +52,19 @@ namespace RemoteControl
 
 				MouseButtonCommand^ MouseButtonCommand::Parse(Stream^ stream)
 				{
-					const int targetBytes = sizeof(int) * 2;
+					const int targetBytes = sizeof(uint8_t) * 2;
 					int nbytes = 0;
 
-					int mouseButton;
-					int mouseButtonEvent;
+					uint8_t mouseButton;
+					uint8_t mouseButtonEvent;
 
-					array<uint8_t>^ buffer = gcnew array<uint8_t>(sizeof(int));
-
-					nbytes += stream->Read(buffer);
-					Marshal::Copy(buffer, 0, static_cast<IntPtr>(&mouseButton), sizeof(int));
+					array<uint8_t>^ buffer = gcnew array<uint8_t>(sizeof(uint8_t));
 
 					nbytes += stream->Read(buffer);
-					Marshal::Copy(buffer, 0, static_cast<IntPtr>(&mouseButtonEvent), sizeof(int));
+					Marshal::Copy(buffer, 0, static_cast<IntPtr>(&mouseButton), sizeof(uint8_t));
+
+					nbytes += stream->Read(buffer);
+					Marshal::Copy(buffer, 0, static_cast<IntPtr>(&mouseButtonEvent), sizeof(uint8_t));
 
 					if (nbytes < targetBytes) 
 					{
@@ -82,10 +82,12 @@ namespace RemoteControl
 				int MouseButtonCommand::WriteTo(Stream^ stream) 
 				{
 					stream->WriteByte((uint8_t)CommandCode::MouseButton);
-					stream->Write(BitConverter::GetBytes((int)m_button));
-					stream->Write(BitConverter::GetBytes((int)m_buttonEvent));
+					stream->WriteByte((uint8_t)m_button);
+					stream->WriteByte((uint8_t)m_buttonEvent);
 
-					return 2 * sizeof(int) + 1;
+					stream->Write(gcnew array<uint8_t> { 0, 0, 0, 0, 0, 0, 0, 0 });
+
+					return 2 * sizeof(uint8_t) + 1;
 				}
 			}
 		}

@@ -4,9 +4,55 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RemoteControl.Client.UI"
+        xmlns:uc="clr-namespace:RemoteControl.Client.UI.Controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="NET Marshal" Height="500" Width="800"
+        Loaded="Window_Loaded">
+    <Grid
+        Background="{StaticResource BackgroundPrimary00dp}">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="9*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"></ColumnDefinition>
+            <ColumnDefinition Width="5*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <uc:Header Grid.ColumnSpan="2"/>
+
+        <uc:TabList x:Name="TabList" Grid.Row="1"/>
+
+        <TabControl
+            Grid.Row="1"
+            Grid.Column="1"
+            BorderThickness="0"
+            Background="{StaticResource BackgroundPrimary00dp}"
+            SelectedIndex="{Binding Path=SelectedTabIndex, UpdateSourceTrigger=PropertyChanged}">
+
+            <TabControl.ItemContainerStyle>
+                <Style TargetType="{x:Type TabItem}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </Style>
+            </TabControl.ItemContainerStyle>
+
+            <TabItem BorderThickness="0">
+                <uc:RemoteControlTab
+                    x:Name="RemoteControlTab"
+                    BorderThickness="0"
+                    Margin="0, 20, 0, 0"
+                    Grid.Column="1" 
+                    Grid.Row="1"
+                    ConnectClick="RemoteControlTab_ConnectClick"/>
+            </TabItem>
+
+            <TabItem BorderThickness="0">
+                <uc:ConnectionsTab/>
+            </TabItem>
+
+        </TabControl>
 
     </Grid>
 </Window>

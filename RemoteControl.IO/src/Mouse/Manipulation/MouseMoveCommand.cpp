@@ -87,6 +87,8 @@ namespace RemoteControl
 					stream->Write(buffer);
 					stream->Write(BitConverter::GetBytes(m_isAbsolute));
 
+					stream->Write(gcnew array<uint8_t> { 0, 0, 0, 0, 0, 0, 0, 0 });
+
 					return sizeof(PointI) + sizeof(m_isAbsolute) + 1;
 				}
 			}

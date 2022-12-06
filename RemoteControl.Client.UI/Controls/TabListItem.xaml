@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="RemoteControl.Client.UI.Controls.TabListItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RemoteControl.Client.UI.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="60" d:DesignWidth="200">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="32"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Path
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Data="{Binding IconData}"
+            Fill="{StaticResource ForegroundPrimary}"
+            Stretch="Uniform">
+        </Path>
+
+        <Label
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            Foreground="{StaticResource ForegroundPrimary}"
+            FontSize="16"
+            Content="{Binding Title}">
+        </Label>
+        
+    </Grid>
+</UserControl>

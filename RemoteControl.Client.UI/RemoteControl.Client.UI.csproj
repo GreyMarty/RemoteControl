@@ -1,10 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Assets\Icons\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RemoteControl.Client.Core\RemoteControl.Client.Core.vcxproj" />
+    <ProjectReference Include="..\RemoteControl.Client\RemoteControl.Client.csproj" />
+    <ProjectReference Include="..\RemoteControl.Core\RemoteControl.Core.vcxproj" />
+    <ProjectReference Include="..\RemoteControl.Encoding\RemoteControl.Compressing.vcxproj" />
+    <ProjectReference Include="..\RemoteControl.IO\RemoteControl.Input.vcxproj" />
+    <ProjectReference Include="..\RemoteControl.Net\RemoteControl.Net.csproj" />
+  </ItemGroup>
 
 </Project>

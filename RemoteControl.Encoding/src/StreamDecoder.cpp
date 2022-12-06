@@ -67,8 +67,21 @@ namespace RemoteControl
 		{
 			if (m_dataSize <= 0) 
 			{
+				if (!m_stream->CanRead)
+				{
+					return nullptr;
+				}
+
 				Array::Clear(m_inbuff, 0, m_inbuff->Length);
-				m_dataSize = m_stream->Read(m_inbuff);
+
+				try
+				{
+					m_dataSize = m_stream->Read(m_inbuff);
+				}
+				catch (System::IO::IOException^) 
+				{
+					return nullptr;
+				}
 
 				if (m_data0) 
 				{
@@ -111,7 +124,7 @@ namespace RemoteControl
 					m_packet->size -= sizeof(milliseconds);
 
 					m_latencyMilliseconds = (duration_cast<milliseconds>(system_clock::now().time_since_epoch()) - timestamp).count();
-					std::cout << "Latency: " << m_latencyMilliseconds << "ms" << std::endl;
+					//std::cout << "Latency: " << m_latencyMilliseconds << "ms" << std::endl;
 
 					DecodeInit(m_context, m_packet);
 					m_parsePacket = true;
@@ -122,7 +135,7 @@ namespace RemoteControl
 
 			if (m_parsePacket)
 			{
-				bool sync = m_latencyMilliseconds > 75;
+				bool sync = /*m_latencyMilliseconds > 75*/ false;
 				m_parsePacket = DecodeNext(m_context, m_frame, m_bitmapFrame, m_packet, bitmap, sync);
 
 				if (bitmap)

@@ -26,7 +26,14 @@ namespace RemoteControl
 
 		MemoryBitmap::~MemoryBitmap() 
 		{
-			delete[] m_scan0;
+			try
+			{
+				UnlockBits();
+			}
+			catch (System::AccessViolationException^) 
+			{
+
+			}
 		}
 
 		MemoryBitmap::!MemoryBitmap() 
@@ -40,7 +47,13 @@ namespace RemoteControl
 
 		void MemoryBitmap::UnlockBits() 
 		{
+			if (m_scan0 == nullptr)
+			{
+				return;
+			}
+
 			delete[] m_scan0;
+			m_scan0 = nullptr;
 		}
 	}
 }

@@ -144,8 +144,8 @@ namespace RemoteControl
 
 			public enum class KeyboardKeyEvent 
 			{
-				Press,
-				Release
+				Press = 1,
+				Release = 2
 			};
 		}
 	}
