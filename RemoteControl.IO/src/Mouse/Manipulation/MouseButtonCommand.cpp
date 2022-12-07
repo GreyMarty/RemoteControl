@@ -85,8 +85,6 @@ namespace RemoteControl
 					stream->WriteByte((uint8_t)m_button);
 					stream->WriteByte((uint8_t)m_buttonEvent);
 
-					stream->Write(gcnew array<uint8_t> { 0, 0, 0, 0, 0, 0, 0, 0 });
-
 					return 2 * sizeof(uint8_t) + 1;
 				}
 			}

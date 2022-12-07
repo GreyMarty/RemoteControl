@@ -22,14 +22,32 @@ namespace RemoteControl
 
 			ICommand^ CommandStreamParser::ParseNext() 
 			{
-				CommandCode commandCode;
+				const uint32_t CMD_START = 0x434D44;
+
+				if (m_stream == nullptr) 
+				{
+					return nullptr;
+				}
+
+				uint8_t lastByte = 0;
 				
 				do
 				{
-					commandCode = (CommandCode)m_stream->ReadByte();
+					lastByte = m_stream->ReadByte();
 				} 
-				while (commandCode == CommandCode::Nop);
+				while (lastByte == 0);
 
+				uint32_t cmdStart = lastByte;
+				cmdStart |= m_stream->ReadByte() << 8;
+				cmdStart |= m_stream->ReadByte() << 16;
+
+				while (cmdStart != CMD_START)
+				{
+					cmdStart >>= 8;
+					cmdStart = m_stream->ReadByte() << 16;
+				}
+
+				CommandCode commandCode = (CommandCode)m_stream->ReadByte();
 				ICommand^ command = nullptr;
 
 				switch (commandCode)

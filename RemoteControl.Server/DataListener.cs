@@ -103,14 +103,31 @@ namespace RemoteControl.Server
             
         }
 
-        public void Disconnect(string connectionString) 
+        public void DisconnectInactive() 
         {
+            _streamMutex.WaitOne();
 
+            _sockets = _sockets.Where(p => p.Value.Connected).ToDictionary(p => p.Key, p => p.Value);
+
+            _netStreams = _netStreams.Where(p => _sockets.ContainsKey(p.Key)).ToDictionary(p => p.Key, p => p.Value);
+
+            var endPoints = new EndPoint[_tcpEndPoints.Forward.Keys.Count];
+            _tcpEndPoints.Forward.Values.CopyTo(endPoints, 0);
+
+            foreach (var endPoint in endPoints)
+            {
+                if (!_sockets.ContainsKey(endPoint)) 
+                {
+                    _tcpEndPoints.Reverse.Remove(endPoint);
+                }
+            }
+
+            _streamMutex.ReleaseMutex();
         }
 
         private void Listen() 
         {
-            var redirections = new Dictionary<EndPoint, Task>();
+            var redirectionTasks = new Dictionary<EndPoint, Task>();
 
             while (IsRunning) 
             {
@@ -123,20 +140,35 @@ namespace RemoteControl.Server
                 //_netStreams = _netStreams.Where(p => _sockets.ContainsKey(p.Key)).ToDictionary(p => p.Key, p => p.Value);
                 //redirections = redirections.Where(p => _sockets.ContainsKey(p.Key)).ToDictionary(p => p.Key, p => p.Value);
 
+
                 _streamMutex.WaitOne();
 
                 foreach (var endPoint in _netStreams.Keys) 
                 {
-                    if (!redirections.ContainsKey(endPoint) || redirections[endPoint].IsCompleted)
+                    bool canRedirect = _tcpEndPoints.Reverse.ContainsKey(endPoint) && _router.Resolve(_tcpEndPoints.Reverse[endPoint]).Count > 0;
+
+                    if (!redirectionTasks.ContainsKey(endPoint) && canRedirect)
                     {
-                        redirections[endPoint] = Redirect(endPoint);
+                        redirectionTasks[endPoint] = Task.WhenAny(Redirect(endPoint), Task.Delay(StreamTimeout));
                     }
                 }
 
                 _streamMutex.ReleaseMutex();
 
-                var tasks = redirections.Values.Append(Task.Delay(StreamTimeout));
-                Task.WaitAny(redirections.Values.ToArray());
+                Task.WaitAny(
+                    Task.WhenAny(redirectionTasks.Values),
+                    Task.Delay(StreamTimeout)
+                );
+
+                foreach (var key in redirectionTasks.Keys.ToArray()) 
+                {
+                    bool canRedirect = _tcpEndPoints.Reverse.ContainsKey(key) && _router.Resolve(_tcpEndPoints.Reverse[key]).Count > 0;
+
+                    if (redirectionTasks[key].IsCompleted || !canRedirect) 
+                    {
+                        redirectionTasks.Remove(key);
+                    }
+                }
             }
         }
 
@@ -172,27 +204,17 @@ namespace RemoteControl.Server
             var connectionString = _tcpEndPoints.Reverse[endPoint];
 
             var buffer = new byte[BufferSize];
-            var readTask = stream.ReadAsync(buffer, 0, buffer.Length);
-
-            await Task.WhenAny(readTask/*, Task.Delay(StreamTimeout)*/);
-
-            if (!readTask.IsCompleted) 
-            {
-                return;
-            }
+            int count = await stream.ReadAsync(buffer, 0, buffer.Length);
 
             var tasks = new List<Task>();
 
-            int count = readTask.Result;
-
             foreach (var sendConnectionString in _router.Resolve(connectionString))
             {
-
                 var sendEndPoint = _tcpEndPoints.Forward[sendConnectionString];
                 var sendStream = _netStreams[sendEndPoint];
 
                 //Debug.WriteLine($"Sending {count} bytes of data from {endPoint} to {sendEndPoint}");
-                tasks.Add(Task.WhenAny(sendStream.WriteAsync(buffer, 0, count)/*, Task.Delay(StreamTimeout)*/));
+                tasks.Add(sendStream.WriteAsync(buffer, 0, count));
             }
 
             await Task.WhenAll(tasks);

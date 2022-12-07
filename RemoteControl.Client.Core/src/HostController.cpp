@@ -127,7 +127,10 @@ namespace RemoteControl
 					{ 0x400000E0,   (uint32_t)KeyboardKey::LCtrl       },
 					{ 0x400000E4,   (uint32_t)KeyboardKey::RCtrl       },
 					{ 0x400000E2,   (uint32_t)KeyboardKey::LAlt        },
-					{ 0x400000E6,   (uint32_t)KeyboardKey::RAlt        }
+					{ 0x400000E6,   (uint32_t)KeyboardKey::RAlt        },
+					{ 0x0000005B,	(uint32_t)KeyboardKey::LeftBracket },
+					{ 0x0000005D,	(uint32_t)KeyboardKey::RightBracket},
+					{ 0x0000005C,	(uint32_t)KeyboardKey::BackSlash   }
 				};
 
 				if (map.find(code) == map.end()) 
@@ -266,7 +269,9 @@ namespace RemoteControl
 				command->KeyEvent = pressed ? KeyboardKeyEvent::Press : KeyboardKeyEvent::Release;
 				command->Scancode = (uint32_t)SDLK2KeyboardKey(event.key.keysym.sym);
 
+				m_commandStream->Write(gcnew array<uint8_t> { 0x44, 0x4D, 0x43 });
 				command->WriteTo(m_commandStream);
+				m_commandStream->Write(gcnew array<uint8_t> { 0, 0, 0, 0, 0, 0, 0, 0 });
 
 				if (event.key.keysym.sym == SDLK_ESCAPE) 
 				{
@@ -295,7 +300,9 @@ namespace RemoteControl
 
 				command->ButtonEvent = pressed ? MouseButtonEvent::Down : MouseButtonEvent::Up;
 
+				m_commandStream->Write(gcnew array<uint8_t> { 0x44, 0x4D, 0x43 });
 				command->WriteTo(m_commandStream);
+				m_commandStream->Write(gcnew array<uint8_t> { 0, 0, 0, 0, 0, 0, 0, 0 });
 			}
 
 			void HostController::ProcessMouseMoveEvent(const SDL_Event& event) 
@@ -309,7 +316,9 @@ namespace RemoteControl
 				);
 				command->IsAbsolute = true;
 
+				m_commandStream->Write(gcnew array<uint8_t> { 0x44, 0x4D, 0x43 });
 				command->WriteTo(m_commandStream);
+				m_commandStream->Write(gcnew array<uint8_t> { 0, 0, 0, 0, 0, 0, 0, 0 });
 			}
 
 			void HostController::DrawBitmap() 
@@ -352,7 +361,14 @@ namespace RemoteControl
 
 					while (!bitmap && m_running)
 					{
-						bitmap = m_videoStream->NextFrame();
+						try
+						{
+							bitmap = m_videoStream->NextFrame();
+						}
+						catch (System::Exception^) 
+						{
+							continue;
+						}
 					}
 
 					if (!bitmap) 

@@ -8,10 +8,10 @@ namespace RemoteControl.Server
     {
         private readonly ILog _logger;
 
-        private ICommandListener _commandListener;
+        private CommandListener _commandListener;
         private Thread _commandListenerThread;
 
-        private IDataListener _dataListener;
+        private DataListener _dataListener;
         private Thread _dataListenerThread;
 
         private Map<string, EndPoint> _udpEndPoints;
@@ -40,6 +40,9 @@ namespace RemoteControl.Server
                 logger
             );
 
+            _commandListener.ClientForsakenControl += _commandListener_ClientForsakenControl;
+            _commandListener.ClientDisconnected += _commandListener_ClientDisconnected;
+
             _dataListener = new DataListener(
                 IPAddress.Any, tcpPort,
                 _router,
@@ -49,6 +52,16 @@ namespace RemoteControl.Server
             );
 
             _logger = logger;
+        }
+
+        private async Task _commandListener_ClientDisconnected(object sender, IPEndPoint endPoint)
+        {
+            _dataListener.DisconnectInactive();
+        }
+
+        private async Task _commandListener_ClientForsakenControl(object sender, IPEndPoint hostEndPoint, IPEndPoint clientEndPoint)
+        {
+            _dataListener?.DisconnectInactive();
         }
 
         public void Run() 
