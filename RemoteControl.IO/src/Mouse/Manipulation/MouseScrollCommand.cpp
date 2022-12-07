@@ -63,8 +63,6 @@ namespace RemoteControl
 					stream->WriteByte((uint8_t)CommandCode::MouseScroll);
 					stream->Write(BitConverter::GetBytes(m_delta));
 
-					stream->Write(gcnew array<uint8_t> { 0, 0, 0, 0, 0, 0, 0, 0 });
-
 					return sizeof(int) + 1;
 				}
 			}

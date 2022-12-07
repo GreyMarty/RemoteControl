@@ -139,7 +139,10 @@ namespace RemoteControl
 				StartMail = 0xB4,
 				SelectMedia = 0xB5,
 				StartApp1 = 0xB6,
-				StartApp2 = 0xB7
+				StartApp2 = 0xB7,
+				LeftBracket = 0xDB,
+				RightBracket = 0xDD,
+				BackSlash = 0xDC
 			};
 
 			public enum class KeyboardKeyEvent 

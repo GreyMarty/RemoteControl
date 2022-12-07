@@ -70,8 +70,6 @@ namespace RemoteControl
 					command->Scancode = scanCode;
 					command->KeyEvent = (KeyboardKeyEvent)keyEvent;
 
-					stream->Write(gcnew array<uint8_t> { 0, 0, 0, 0, 0, 0, 0, 0 });
-
 					return command;
 				}
 			}

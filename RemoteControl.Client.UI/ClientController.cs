@@ -44,7 +44,11 @@ namespace RemoteControl.Client.UI
 
         public ClientController()
         {
-            _client = new Client(IPAddress.Parse(ConfigurationManager.), 40040, 40040);
+            _client = new Client(
+                IPAddress.Parse(ConfigurationManager.AppSettings["IpAddress"]),
+                int.Parse(ConfigurationManager.AppSettings["UdpPort"]),
+                int.Parse(ConfigurationManager.AppSettings["TcpPort"])
+            );
             _client.TakenControl += TakenControl;
             _client.ForsakenControl += ForsakenControl;
         }
@@ -140,14 +144,15 @@ namespace RemoteControl.Client.UI
 
         private void FreeResources() 
         {
-            Thread.Sleep(10);
+            Thread.Sleep(100);
 
             _hostController?.Close();
             _hostController?.Dispose();
 
             IsControlled = false;
 
-            _hostControllerThread.Join();
+            _hostControllerThread?.Join();
+            _controlThread?.Join();
             _decoder?.Dispose();
         }
 
@@ -209,7 +214,7 @@ namespace RemoteControl.Client.UI
                 try
                 {
                     var command = _commandParser.ParseNext();
-                    command.Execute();
+                    //command.Execute();
                     Debug.WriteLine(command);
                 }
                 catch (Exception e) 
